@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from bs4 import BeautifulSoup
 import requests
@@ -18,162 +18,18 @@ from django.views import View
 def home(request):
     predictions = 'No Predictions Available'
 
-
-        
-
     context = {'predictions':predictions}
     return render(request, 'scoracle.html', context)
 
-class MatchPrediction(View):
-    def post(self, request):
-        predictions = 'No Predictions Available'
-
-        if request.method == 'POST':
-            league_form = request.POST['league']
-            home_team = request.POST['home_team']
-            away_team = request.POST['away_team']
-            league = str(league_form)
-            urlavgtable = 'https://www.soccerstats.com/table.asp?league='+league+'&tid=d'
-            try:
-                response = requests.get(urlavgtable)
-
-                # Parse the HTML content using BeautifulSoup
-                soup = BeautifulSoup(response.content, "html.parser")
-                
-                # res = requests.get(urlfixture)
-                # soup = BeautifulSoup(res.content, "html.parser")
-
-                table = soup.find("table", style="margin-left:14px;margin-riht:14px;border:1px solid #aaaaaa;border-radius:12px;overflow:hidden;")
-
-                Home_avg = float(100.000)
-                if table:
-                        # Find all <b> tags within the table
-                        b_tags = table.find_all("b")
-
-                        # Check if the 9th <b> tag exists
-                        if len(b_tags) >= 9:
-                            # Get the text from the 9th <b> tag
-                            Home_avg = float(b_tags[8].text)
-                            
-                # get away average for league
-                Away_avg = float(100.000)
-                if table:
-                        # Find all <b> tags within the table
-                        b_tags = table.find_all("b")
-
-                        # Check if the 9th <b> tag exists
-                        if len(b_tags) >= 11:
-                            # Get the text from the 9th <b> tag
-                            Away_avg = float(b_tags[10].text)
-                
-                table = soup.find("table", {"id": "btable"})
-                home_scored_at_home = float(100.000)
-                chelsea_tr = soup.find('tr', class_='odd', string=lambda text: home_team in text)
-
-                first_font = chelsea_tr.find('font')
-
-                # Print the text of the first <font> tag
-                if first_font:
-                    home_scored_at_home = float(first_font.get_text(strip=True))
-                #             home_scored_at_home = float(tr.find('font'))
-                # home_conc_at_home = float(100.000)
-                if table:
-                    # Find all <tr> elements in the table
-                    tr_tags = table.find_all("tr")
-                    
-                    for tr in tr_tags:
-                        # Check if the text 'chelsea' is in the <tr> tag
-                        if home_team in tr.get_text().lower():
-                            # Find all <font> tags within this <tr> tag
-                            font_tags = tr.find_all('font')
-                            
-                            # Check if there are at least two <font> tags
-                            if len(font_tags) >= 2:
-                                home_conc_at_home = float(font_tags[1])
-                            
-                
-                away_scored_at_away = float(10.000)
-                if table:
-                    # Find all <tr> elements in the table
-                    tr_tags = table.find_all("tr")
-                    
-                    for tr in tr_tags:
-                        # Check if the text 'chelsea' is in the <tr> tag
-                        if away_team in tr.get_text().lower():
-                            # Find all <font> tags within this <tr> tag
-                            font_tags = tr.find_all('font')
-                            
-                            # Check if there are at least two <font> tags
-                            if len(font_tags) >= 4:
-                                away_scored_at_away = float(font_tags[3])
-                away_conc_at_away = float(10.000)
-                if table:
-                    # Find all <tr> elements in the table
-                    tr_tags = table.find_all("tr")
-                    
-                    for tr in tr_tags:
-                        # Check if the text 'chelsea' is in the <tr> tag
-                        if away_team in tr.get_text().lower():
-                            # Find all <font> tags within this <tr> tag
-                            font_tags = tr.find_all('font')
-                            
-                            # Check if there are at least two <font> tags
-                            if len(font_tags) >= 5:
-                                away_conc_at_away = float(font_tags[4])
-
-
-
-                Home_Team = home_team
-                Away_Team = away_team
-                Home_Goal_At_Home = home_scored_at_home
-                Away_Goal_At_Away = away_scored_at_away
-                Home_League_Average = Home_avg
-                Away_Conceded_Away = away_conc_at_away
-                Home_Conceded_Home = home_conc_at_home
-                Away_League_Average = Away_avg
-                H1 = ("{:0.2f}".format(float(Home_Goal_At_Home)/Home_League_Average)) 
-                H2 = ("{:0.2f}".format(float(Away_Conceded_Away)/Home_League_Average)) 
-                Home_goal = ("{:0.2f}".format(float(H1) * float(H2) * float(Home_League_Average)))
-                A1 = ("{:0.2f}".format(float(Home_Conceded_Home)/Away_League_Average)) 
-                A2 = ("{:0.2f}".format(float(Away_Goal_At_Away)/Away_League_Average)) 
-                Away_goal = ("{:0.2f}".format(float(A1) * float(A2) * float(Away_League_Average)))
-                twomatch_goals_probability = ("{:0.2f}".format((1-poisson.cdf(k=2, mu=float(float(Home_goal) + float(Away_goal))))*100))
-                threematch_goals_probability = ("{:0.2f}".format((1-poisson.cdf(k=3, mu=float(float(Home_goal) + float(Away_goal))))*100))
-
-                lambda_home = float(Home_goal)
-                lambda_away = float(Away_goal)
-
-                score_probs = [[poisson.pmf(i, team_avg) for i in range(0, 10)] for team_avg in [lambda_home, lambda_away]]
-
-                outcomes = [[i, j] for i in range(0, 10) for j in range(0, 10)]
-
-                probs = [score_probs[0][i] * score_probs[1][j] for i, j in outcomes]
-
-                most_likely_outcome = outcomes[probs.index(max(probs))]
-
-                most_likely_prob_percent = max(probs) * 100
-                print(Away_Goal_At_Away)
-                print(Home_Goal_At_Home)
-                print(Home_League_Average)
-                response_data = {
-                        
-                        f"{Home_Team} {most_likely_outcome[0]} vs {Away_Team} {most_likely_outcome[1]}",
-                        f"Over 2.5 prob: - {threematch_goals_probability}%",
-                        f"Over 1.5 prob: - {twomatch_goals_probability}%"
-                    }
-
-                predictions = response_data
-                
-
-            except Exception as e:
-                predictions = f'Error: {str(e)}'
-
-        context = {'predictions': predictions}
-        return render(request, 'scoracle.html', context)
-
 
 class LeaguePrediction(View):
+    template_name = 'scoracle.html'
 
+    def get(self, request):
+        predictions = 'No Predictions Available'
+
+        context = {'predictions':predictions}
+        return render(request, 'scoracle.html', context)
     def post(self, request):
         predictions = 'No Predictions Available'
 
@@ -203,10 +59,7 @@ class LeaguePrediction(View):
                 header_row = ['Team name', 'Scoredhome', 'Conc.', 'Total', 'Scored', 'Conc.', 'Total', 'Scored', 'Conc.', 'Total', 'GP']
 
 
-                # if not os.path.exists('csv'):
-                #     os.makedirs('csv')
-                # if not os.path.exists(f"csv/{league}.csv"):
-                #     os.makedirs(f"csv/{league}.csv")
+                
                 with open(f"csv/{league}.csv", mode='w', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow(header_row)
@@ -322,19 +175,20 @@ class LeaguePrediction(View):
 
                         most_likely_prob_percent = max(probs) * 100
                         
-                        response_data = {
-                        
-                        f"{first_item} {most_likely_outcome[0]} vs {second_item} {most_likely_outcome[1]}",
-                        # 'most_likely_prob_percent': f"{most_likely_prob_percent:.1f}%",
-                        f"Over 2.5 prob: - {threematch_goals_probability}%",
-                        f"Over 1.5 prob: - {twomatch_goals_probability}%"
-                        }
-
+                        response_data = [
+                            {
+                                'prediction': f"{first_item} {most_likely_outcome[0]} vs {second_item} {most_likely_outcome[1]}",
+                                'over_2.5_prob': f"{threematch_goals_probability}%",
+                                'over_1.5_prob': f"{twomatch_goals_probability}%"
+                            },
+                            # Add more predictions in a similar format if needed
+                        ]
+                        print(response_data)
                         predictions_list.extend(response_data)
 
                 # Join predictions with newlines
-                predictionx = '\n'.join(predictions_list)
-                predictions = HttpResponse(predictions)
+                        predictions = predictions_list
+                # predictions = HttpResponse(predictions)
                 
 
             except Exception as e:
@@ -343,3 +197,20 @@ class LeaguePrediction(View):
         context = {'predictions': predictions}
         return render(request, 'scoracle.html', context)
 
+
+
+def contact(request):
+    if request.method == 'POST':
+        body = request.POST['message']
+        sender = request.POST['email']
+        sender_name = request.POST['sender_name']
+
+        send_mail(
+                'Message from ' + sender + ' , ' + sender_name,
+                body,
+                'settings.EMAIL_HOST_USER',
+                ['mezardini@gmail.com'],
+                fail_silently=False,
+            )
+        
+    return redirect('home')

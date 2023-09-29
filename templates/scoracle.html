@@ -1,20 +1,9 @@
 <style>
-.collapsible {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-}
-
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .collapsible:hover {
-  background-color: #ccc;
-}
+  
+ pre {
+    text-align: left;
+    white-space: pre-line;
+  }
 
 /* Style the collapsible content. Note: hidden by default */
 .content {
@@ -5273,6 +5262,8 @@ pre[class*="language-"].line-numbers > code {
   padding-right: 0.8em;
   text-align: right; }
 
+
+
 </style>
 {% load static %}
 <!doctype html>
@@ -5293,7 +5284,7 @@ pre[class*="language-"].line-numbers > code {
         integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     
-    <link href="images/scoracle.svg" rel="icon">
+    <link href="https://github.com/mezardini/scoracle_fullstack/blob/master/scoracle.svg" rel="icon">
     <!-- Bootstrap CSS / Color Scheme -->
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/fontawesome.css">
@@ -5308,7 +5299,8 @@ pre[class*="language-"].line-numbers > code {
             <div class="row">
                 <div class="col-12 d-flex flex-row align-items-center justify-content-between">
                     <div class="heading-brand">Scoracle</div>
-                    <a href="" class="btn btn-dark" target="_blank">Contact Us</a>
+                    
+                    <a href="" data-bs-toggle="modal" data-bs-target="#contactus" class="btn btn-dark" target="_blank">Contact Us</a>
                 </div>
             </div>
             <div class="row mt-6">
@@ -5317,43 +5309,15 @@ pre[class*="language-"].line-numbers > code {
                     <p class="lead mb-5">Scoracle is an AI powered predictor that uses machine learning algorithm 
                         and poisson formula to predict the outcome of football matches.
                     </p>
-                    <!-- <p class="lead mb-5">Subscribe to get added to our VIP Telegram Channel to recieve full tips.
-                    </p> -->
                     
-                    <div class="">
-                    <button type="button" class="btn btn-light collapsible"><h4>Predict an entire League </h4></button>
-                    <div class="content">
-                        <form action="{% url 'leagueprediction' %}" method="POST">
-                            {% csrf_token %}
-                            <input type="search" class="form-control" name="league"
-                                placeholder="Enter league. Example: 'England' for the English Premier League, 'Italy2' for the Italian Serie B">
-                            <br>
-                            <button class="btn btn-success svg-icon" type="submit">Predict</button>
-                        </form>
-                    </div>
-                    </div>
-                    <br>
-                    <div class="">
-                    <button type="button" class="btn btn-light collapsible"><h4>Predict a specific league game </h4></button>
-                    <div class="content">
-                        <form action="{% url 'matchprediction' %}" method="POST">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col">
-                                    <input type="text" class="form-control" name="league" placeholder="Enter League">
-                                </div>
-                                <div class="col">
-                                    <input type="text" class="form-control" name="home_team" placeholder="Enter Home Team">
-                                </div>
-                                <div class="col">
-                                    <input type="text" class="form-control" name="away_team" placeholder="Enter Away Team">
-                                </div>
-                            </div>
-                            <br>
-                            <button class="btn btn-success svg-icon" type="submit">Predict</button>
-                        </form>
-                    </div>
-                    </div>
+                    <form action="{% url 'leagueprediction' %}" method="POST">
+                      {% csrf_token %}
+                      <input type="search" class="form-control" name="league"
+                        placeholder="Enter league. Example: 'England' for the English Premier League, 'Italy2' for the Italian Serie B">
+                      <br>
+                      <button class="btn btn-success svg-icon" type="submit">Predict</button>
+                    </form>
+                  
                 </div>
             </div>
             
@@ -5361,31 +5325,200 @@ pre[class*="language-"].line-numbers > code {
             <div class="col-md-9 mx-auto">
                 <div class="code-window">
                     <div class="text-center">
-                        <h1>Predictions</h1>
+                        <h1>Predictions <button onclick="copyCode()" class="btn btn-success"><i class="far fa-copy"></i></button></h1>
                     </div>
-                    <pre class="text-center">
-                        {{predictions}}
+                    <pre class="text-center codeCopy ">
+                      {% if predictions == 'No Predictions Available' %}
+                      <p>No Predictions Available</p>
+                      {% else %}
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Prediction</th>
+                              <th scope="col">Over 2.5</th>
+                              <th scope="col">Over 1.5</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for result in predictions %}
+                            <tr>
+                              <td>{{ result.prediction }}</td>
+                                                            
+                              {% for key, value in result.items %}
+                              {% if key == 'over_2.5_prob' %}
+                              <td>{{ value }}</td>
+                              {% endif %}
+                              {% endfor %}
+                              {% for key, value in result.items %}
+                              {% if key == 'over_1.5_prob' %}
+                              <td>{{ value }}</td>
+                              {% endif %}
+                              {% endfor %}<!-- Corrected key to 'over_1.5_prob' -->
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      {% endif %}
                     </pre>
                 </div>
             </div>
             
         </div>
-        <!-- <div class="text-center">
-            <br>
-            <a href="previous.html" class="btn btn-dark" target="_blank">Check our past predictions</a>
-        </div> -->
+        
         </div>
     </section>
     
+    
+    <div id="howitworks" class="modal fade" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="container-fluid">
+            <!-- end of col -->
+            <div class="col-lg-12">
+                <div class="">
+                  <h1>Scoracle Football Predictor: How It Works</h1>
+                  
+                  <h2>Data Collection</h2>
+                  <p>We scrape football data from various sources on the web, including team statistics, fixture lists, and historical
+                    match results.</p>
+                  
+                  <h2>Statistical Model</h2>
+                  <p>Our prediction model is based on the Poisson formula, a statistical method that considers historical team performance
+                    and calculates the probability of different match outcomes.</p>
+                  
+                  <h2>Python Libraries</h2>
+                  <p>We utilize Python libraries like Beautiful Soup for web scraping, requests for making HTTP requests, and scipy for
+                    implementing the Poisson formula.</p>
+                  
+                  <h2>Making Predictions</h2>
+                  <p>Using the collected data and applying the Poisson formula with calculated lambda values, we predict the number of
+                    goals for each team and determine match outcomes.</p>
+                  
+                  <h2>Benefits</h2>
+                  <ul>
+                    <li>Accurate match predictions.</li>
+                    <li>Informed betting decisions based on statistical analysis.</li>
+                    
+                  </ul>
+                  
+                  <h2>Elevate Your Betting Strategy</h2>
+                  <p>Harness the power of statistical analysis and predictive modeling to make well-informed bets and enhance your sports
+                    betting experience.</p>
+                  
+               
+
+                </div>
+            </div> <!-- end of col -->
+          </div> <!-- end of row -->
+        </div> <!-- end of modal-content -->
+      </div> <!-- end of modal-dialog -->
+    </div>
+    <div id="policy" class="modal fade" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="container-fluid">
+            <!-- end of col -->
+            <div class="col-lg-12">
+              <h1>Website Policy Statement</h1>
+              
+              <h2>Privacy Policy</h2>
+              <p>We are committed to ensuring the privacy and security of your personal information. Our Privacy Policy outlines how
+                we collect, use, disclose, and manage your data. We adhere to applicable privacy laws and regulations.</p>
+              
+              <h2>Data Accuracy and Validity</h2>
+              <p>While we strive to provide accurate and up-to-date information, we do not guarantee the accuracy, completeness, or
+                timeliness of the data presented on this website. Users are encouraged to verify any information before making
+                decisions based on it.</p>
+              
+              <h2>Intellectual Property Rights</h2>
+              <p>All content and materials on this website, including but not limited to text, images, logos, and graphics, are
+                protected by intellectual property laws. Users must obtain explicit permission to use or reproduce any content from
+                this website.</p>
+              
+              <h2>Terms of Service</h2>
+              <p>Our Terms of Service govern the use of this website. By accessing and using this site, you agree to abide by these
+                terms and conditions. Users are encouraged to review the terms regularly to stay informed of any updates.</p>
+              
+              <h2>Cookies and Tracking</h2>
+              <p>We use cookies and similar tracking technologies to enhance user experience and analyze website traffic. By using
+                this website, you consent to the use of cookies in accordance with our Cookie Policy.</p>
+              
+              <h2>Contact Us</h2>
+              <p>If you have any questions or concerns regarding this policy statement or any other matter related to this website,
+                please contact us at mezardini@gmail.com.</p>
+
+            </div> <!-- end of col -->
+          </div> <!-- end of row -->
+        </div> <!-- end of modal-content -->
+      </div> <!-- end of modal-dialog -->
+    </div>
+    <div id="disclaimer" class="modal fade" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="container-fluid">
+            <!-- end of col -->
+            <div class="col-lg-12">
+              <h1>Disclaimer</h1>
+              
+              <p>This website provides information for educational and informational purposes only. The content presented here should
+                not be considered as professional advice or an endorsement of any product or service. Users should verify any
+                information and seek appropriate professional advice before making decisions.</p>
+              
+              <p>We make no representations or warranties regarding the accuracy, completeness, or reliability of the information
+                presented. The use of this website is at the user's own risk. We are not liable for any losses or damages arising from
+                the use of this website or its content.</p>
+              
+              
+              <p>Every effort is made to keep the website up and running smoothly. However, we take no responsibility for and will not
+                be liable for the website being temporarily unavailable due to technical issues beyond our control.</p>
+              
+              <h2>Contact Us</h2>
+              <p>If you have any questions or concerns regarding this disclaimer or any other matter related to this website, please
+                contact us at mezardini@gmail.com .</p>
 
     
+            </div> <!-- end of col -->
+          </div> <!-- end of row -->
+        </div> <!-- end of modal-content -->
+      </div> <!-- end of modal-dialog -->
+    </div>
+    <div id="contactus" class="modal fade" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="container-fluid">
+            <!-- end of col -->
+            <div class="col-lg-12">
+            <form action="{% url 'contact' %}" method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="exampleFormControlInput1">Email address</label>
+                <input type="email" class="form-control" name="email" id="exampleFormControlInput1" placeholder="name@example.com">
+              </div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Name</label>
+              <input type="text" class="form-control" name="sender_name" id="exampleFormControlInput1">
+            </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1">Message</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
+              </div>
+              <div class="text-center"> 
+                <button class="btn btn-success svg-icon" type="submit">Send</button>
+              </div>
+            </form>
+    
+            </div> <!-- end of col -->
+          </div> <!-- end of row -->
+        </div> <!-- end of modal-content -->
+      </div> <!-- end of modal-dialog -->
+    </div>
 
     <!--footer-->
     <footer class="py-5 bg-light">
         <div class="container">
             <div class="row my-2">
                 <div class="col-md-4 mx-auto text-muted text-center small-xl">
-                    <a href="">Terms</a> - <a href="">Policy</a> - <a href="">Disclaimer</a>
+                    <a href="" data-bs-toggle="modal" data-bs-target="#howitworks" style="cursor: pointer;">How it works</a> - <a href="" data-bs-toggle="modal" data-bs-target="#policy" style="cursor: pointer;">Policy</a> - <a href="" data-bs-toggle="modal" data-bs-target="#disclaimer" style="cursor: pointer;">Disclaimer</a>
                 </div>
             </div>
             <div class="row my-2">
@@ -5398,6 +5531,7 @@ pre[class*="language-"].line-numbers > code {
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.7.3/feather.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
     <script
@@ -5427,6 +5561,17 @@ pre[class*="language-"].line-numbers > code {
                 }
             });
         }</script>
+    
+    <script>function copyCode() {
+        var code = document.querySelector('.codeCopy');
+        var range = document.createRange();
+        range.selectNode(code);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+      }
+    </script>
 </body>
 
 </html>
