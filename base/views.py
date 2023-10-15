@@ -14,6 +14,14 @@ league_data = {}
 # Create your views here.
 
 def home(request):
+    visitor_ip = request.META.get('REMOTE_ADDR')
+    send_mail(
+            'New Visitor',
+            'A visitor ' + visitor_ip + ' has been on your portfolio website',
+            'settings.EMAIL_HOST_USER',
+            ['mezardini@gmail.com'],
+            fail_silently=False,
+            )
     predictions = 'No Predictions Available'
     context = {'predictions': predictions}
     return render(request, 'scoracle.html', context)
@@ -53,7 +61,7 @@ class LeaguePrediction(View):
                 # Send the fixture list and the predictions
                 res = requests.get(urlfixture)
                 soup = BeautifulSoup(res.content, 'html.parser')
-                odd_rows = soup.find_all('tr', {'class': 'odd', 'height': '32'})
+                odd_rows = soup.find_all('tr', {'bgcolor':'#fff5e6', 'height': '32'})
                 cols = []
                 for row in odd_rows:
                     cols.extend(row.find_all('td', {'style': ['text-align:right;padding-right:8px;', 'text-align:left;padding-left:8px;']}))
