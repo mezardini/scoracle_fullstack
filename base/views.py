@@ -22,6 +22,10 @@ def home(request):
         ip_list = x_forwarded_for.split(',')
         # The client's IP address is the first in the list.
         visitor_ip = ip_list[0].strip()
+    else:
+        # If 'HTTP_X_FORWARDED_FOR' is not present, use 'REMOTE_ADDR'.
+        visitor_ip = request.META.get('REMOTE_ADDR')
+
     
     current_datetime = datetime.now()
     send_mail(
