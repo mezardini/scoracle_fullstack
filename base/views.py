@@ -7,6 +7,7 @@ import math
 import json
 from django.core.mail import send_mail
 from django.views import View
+from datetime import datetime
 
 # In-memory storage for league data
 league_data = {}
@@ -14,10 +15,18 @@ league_data = {}
 # Create your views here.
 
 def home(request):
-    visitor_ip = request.META.get('REMOTE_ADDR')
+    visitor_ip = ''
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        # The IP addresses are usually comma-separated.
+        ip_list = x_forwarded_for.split(',')
+        # The client's IP address is the first in the list.
+        visitor_ip = ip_list[0].strip()
+    
+    current_datetime = datetime.now()
     send_mail(
             'New Visitor',
-            'A visitor ' + visitor_ip + ' has been on your portfolio website',
+            'A visitor ' + visitor_ip + ' has been on scoracle at ' + current_datetime,
             'settings.EMAIL_HOST_USER',
             ['mezardini@gmail.com'],
             fail_silently=False,
