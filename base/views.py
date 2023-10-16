@@ -15,16 +15,7 @@ league_data = {}
 # Create your views here.
 
 def home(request):
-    visitor_ip = ''
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        # The IP addresses are usually comma-separated.
-        ip_list = x_forwarded_for.split(',')
-        # The client's IP address is the first in the list.
-        visitor_ip = ip_list[0].strip()
-    else:
-        # If 'HTTP_X_FORWARDED_FOR' is not present, use 'REMOTE_ADDR'.
-        visitor_ip = request.META.get('REMOTE_ADDR')
+    visitor_ip = visitor_ip = request.META.get('REMOTE_ADDR')
 
     
     current_datetime = datetime.now()
