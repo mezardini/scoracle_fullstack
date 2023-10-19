@@ -7095,6 +7095,9 @@ Custom CSS
           </div>
         </div>
         <div class="row mt-6">
+          <div class="mx-auto text-center modalx" id="myDiv" style=" display:flex; justify-content: center;">
+                <p class="alert alert-info text-center" role="alert" >Contact the owner at <bold style="text-decoration: underline;">ajisolaolaoluwa@gmail.com</bold> <button type="button" onclick="removeDiv()" class="btn-close" data-bs-dismiss="modalx" aria-label="Close">X</button></p>
+                </div>
           <div class="col-md-8 mx-auto text-center">
             <h1>Scoracle Football Predictor</h1>
             <p class="lead mb-5">
@@ -7474,7 +7477,12 @@ Custom CSS
         });
       }
     </script>
-
+    <script>
+      function removeDiv() {
+        var divToRemove = document.getElementById("myDiv");
+        divToRemove.parentNode.removeChild(divToRemove);
+      }
+    </script>
     <script>
       function copyCode() {
         var code = document.querySelector(".codeCopy");
