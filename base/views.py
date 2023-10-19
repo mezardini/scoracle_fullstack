@@ -75,7 +75,7 @@ class LeaguePrediction(View):
                 # Send the fixture list and the predictions
                 res = requests.get(urlfixture)
                 soup = BeautifulSoup(res.content, 'html.parser')
-                odd_rows = soup.find_all('tr', {'bgcolor':'#fff5e6', 'height': '32'})
+                odd_rows = soup.find_all('tr', {'bgcolor':'#ffffff', 'height': '32'})
                 cols = []
                 for row in odd_rows:
                     cols.extend(row.find_all('td', {'style': ['text-align:right;padding-right:8px;', 'text-align:left;padding-left:8px;']}))
