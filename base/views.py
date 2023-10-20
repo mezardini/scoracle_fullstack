@@ -88,7 +88,7 @@ class LeaguePrediction(View):
                     # Send the fixture list and the predictions
                     res = requests.get(urlfixture)
                     soup = BeautifulSoup(res.content, 'html.parser')
-                    odd_rows = soup.find_all('tr', {'bgcolor':'#ffffff', 'height': '32'})
+                    odd_rows = soup.find_all('tr', {'height': '32'})
                     cols = []
                     for row in odd_rows:
                         cols.extend(row.find_all('td', {'style': ['text-align:right;padding-right:8px;', 'text-align:left;padding-left:8px;']}))
@@ -156,17 +156,17 @@ class LeaguePrediction(View):
                             },
                             
                         ]
-                        if response_data:
-                            for data in response_data:
-                                print(response_data)
-                                predictions_list.extend(response_data)
+                        # if response_data:
+                        #     for data in response_data:
+                        #         print(response_data)
+                        predictions_list.extend(response_data)
                             
-                        else:
-                            predictions = 'No Predictions Available'
+                        # else:
+                        #     predictions = 'No Predictions Available'
                         
 
                     # Join predictions with newlines
-                    # predictions = predictions_list
+                    predictions = predictions_list
 
                 except Exception as e:
                     predictions = f'Error: {str(e)}'
