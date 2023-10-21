@@ -40,18 +40,7 @@ def home(request):
     context = {'predictions': predictions}
     return render(request, 'scoracle.html', context)
 
-
-
-
 class LeaguePrediction(View):
-    def is_valid_url(url):
-        try:
-            response = requests.get(url)
-            return response.status_code // 100 == 2  # Status codes in the 200 range are considered valid
-        except requests.exceptions.RequestException:
-            return False  # An exception occurred, so the URL is invalid
-
-
     template_name = 'scoracle.html'
 
     def get(self, request):
@@ -68,110 +57,106 @@ class LeaguePrediction(View):
             urlavgtable = f'https://www.soccerstats.com/table.asp?league={league}&tid=d'
             urlfixture = f'https://www.soccerstats.com/latest.asp?league={league}'
 
-            if LeaguePrediction.is_valid_url(urlfixture):
+            try:
+                # Print the league table into in-memory data
+                response = requests.get(urlavgtable)
+                soup = BeautifulSoup(response.content, "html.parser")
+                table = soup.find("table", {"id": "btable"})
+                header = table.find_all("th")
+                header = [h.text.strip() for h in header]
+                rows = table.find_all("tr")[1:]
+                league_data[league] = {'header': header, 'rows': []}
 
-                try:
-                    # Print the league table into in-memory data
-                    response = requests.get(urlavgtable)
-                    soup = BeautifulSoup(response.content, "html.parser")
-                    table = soup.find("table", {"id": "btable"})
-                    header = table.find_all("th")
-                    header = [h.text.strip() for h in header]
-                    rows = table.find_all("tr")[1:]
-                    league_data[league] = {'header': header, 'rows': []}
+                for row in rows[1:]:
+                    cols = row.find_all('td')
+                    cols = [col.text.strip() for col in cols]
+                    league_data[league]['rows'].append(cols)
+                
+                # Send the fixture list and the predictions
+                res = requests.get(urlfixture)
+                soup = BeautifulSoup(res.content, 'html.parser')
+                odd_rows = soup.find_all('tr', {'bgcolor':'#fff5e6', 'height': '32'})
+                cols = []
+                for row in odd_rows:
+                    cols.extend(row.find_all('td', {'style': ['text-align:right;padding-right:8px;', 'text-align:left;padding-left:8px;']}))
 
-                    for row in rows[1:]:
-                        cols = row.find_all('td')
-                        cols = [col.text.strip() for col in cols]
-                        league_data[league]['rows'].append(cols)
+                output = [col.text.strip() for col in cols]
 
-                    # Send the fixture list and the predictions
-                    res = requests.get(urlfixture)
-                    soup = BeautifulSoup(res.content, 'html.parser')
-                    odd_rows = soup.find_all('tr', {'height': '32'})
-                    cols = []
-                    for row in odd_rows:
-                        cols.extend(row.find_all('td', {'style': ['text-align:right;padding-right:8px;', 'text-align:left;padding-left:8px;']}))
+                teams = [row[0] for row in league_data[league]['rows']]
 
-                    output = [col.text.strip() for col in cols]
+                b_tags = soup.find_all('b')
+                table = soup.find("table", style="margin-left:14px;margin-riht:14px;border:1px solid #aaaaaa;border-radius:12px;overflow:hidden;")
 
-                    teams = [row[0] for row in league_data[league]['rows']]
+                Home_avg = float(100.000)
+                if table:
+                    b_tags = table.find_all("b")
+                    if len(b_tags) >= 9:
+                        Home_avg = b_tags[8].text
 
-                    b_tags = soup.find_all('b')
-                    table = soup.find("table", style="margin-left:14px;margin-riht:14px;border:1px solid #aaaaaa;border-radius:12px;overflow:hidden;")
+                Away_avg = float(100.000)
+                if table:
+                    b_tags = table.find_all("b")
+                    if len(b_tags) >= 11:
+                        Away_avg = b_tags[10].text
 
-                    Home_avg = float(100.000)
-                    if table:
-                        b_tags = table.find_all("b")
-                        if len(b_tags) >= 9:
-                            Home_avg = b_tags[8].text
+                H3a = Home_avg
+                A3a = Away_avg
+                H3 = float(H3a)
+                A3 = float(A3a)
+                predictions_list = []
 
-                    Away_avg = float(100.000)
-                    if table:
-                        b_tags = table.find_all("b")
-                        if len(b_tags) >= 11:
-                            Away_avg = b_tags[10].text
+                for i in range(0, len(output), 2):
+                    first_item = output[i]
+                    second_item = output[i+1]
+                    if first_item in teams:
+                        row_list = league_data[league]['rows'][teams.index(first_item)]
+                        print(first_item)
+                    if second_item in teams:
+                        row_listaway = league_data[league]['rows'][teams.index(second_item)]
+                        print(second_item)
 
-                    H3a = Home_avg
-                    A3a = Away_avg
-                    H3 = float(H3a)
-                    A3 = float(A3a)
-                    predictions_list = []
+                    H1 = ("{:0.2f}".format(float(row_list[6])/H3))
+                    print(row_list[6])
+                    H2 = ("{:0.2f}".format(float(row_listaway[11])/H3))
+                    print(row_listaway[11])
+                    Home_goal = ("{:0.2f}".format(float(H1) * float(H2) * float(H3)))
+                    A1 = ("{:0.2f}".format(float(row_list[7])/A3))
+                    print(row_list[7])
+                    A2 = ("{:0.2f}".format(float(row_listaway[10])/A3))
+                    print(row_listaway[10])
+                    Away_goal = ("{:0.2f}".format(float(A1) * float(A2) * float(A3)))
+                    twomatch_goals_probability = ("{:0.2f}".format((1-poisson.cdf(k=2, mu=float(float(Home_goal) + float(Away_goal))))*100))
+                    threematch_goals_probability = ("{:0.2f}".format((1-poisson.cdf(k=3, mu=float(float(Home_goal) + float(Away_goal))))*100))
 
-                    for i in range(0, len(output), 2):
-                        first_item = output[i]
-                        second_item = output[i+1]
-                        if first_item in teams:
-                            row_list = league_data[league]['rows'][teams.index(first_item)]
-                        if second_item in teams:
-                            row_listaway = league_data[league]['rows'][teams.index(second_item)]
+                    lambda_home = float(Home_goal)
+                    lambda_away = float(Away_goal)
 
-                        H1 = ("{:0.2f}".format(float(row_list[1])/H3))
-                        H2 = ("{:0.2f}".format(float(row_listaway[6])/H3))
-                        Home_goal = ("{:0.2f}".format(float(H1) * float(H2) * float(H3)))
-                        A1 = ("{:0.2f}".format(float(row_list[2])/A3))
-                        A2 = ("{:0.2f}".format(float(row_listaway[5])/A3))
-                        Away_goal = ("{:0.2f}".format(float(A1) * float(A2) * float(A3)))
-                        twomatch_goals_probability = ("{:0.2f}".format((1-poisson.cdf(k=2, mu=float(float(Home_goal) + float(Away_goal))))*100))
-                        threematch_goals_probability = ("{:0.2f}".format((1-poisson.cdf(k=3, mu=float(float(Home_goal) + float(Away_goal))))*100))
+                    score_probs = [[poisson.pmf(i, team_avg) for i in range(0, 10)] for team_avg in [lambda_home, lambda_away]]
 
-                        lambda_home = float(Home_goal)
-                        lambda_away = float(Away_goal)
+                    outcomes = [[i, j] for i in range(0, 10) for j in range(0, 10)]
 
-                        score_probs = [[poisson.pmf(i, team_avg) for i in range(0, 10)] for team_avg in [lambda_home, lambda_away]]
+                    probs = [score_probs[0][i] * score_probs[1][j] for i, j in outcomes]
 
-                        outcomes = [[i, j] for i in range(0, 10) for j in range(0, 10)]
+                    most_likely_outcome = outcomes[probs.index(max(probs))]
 
-                        probs = [score_probs[0][i] * score_probs[1][j] for i, j in outcomes]
+                    most_likely_prob_percent = max(probs) * 100
 
-                        most_likely_outcome = outcomes[probs.index(max(probs))]
+                    response_data = [
+                        {
+                            'prediction': f"{first_item} {most_likely_outcome[0]} vs {second_item} {most_likely_outcome[1]}",
+                            'over_2.5_prob': f"{threematch_goals_probability}%",
+                            'over_1.5_prob': f"{twomatch_goals_probability}%"
+                        },
+                        # Add more predictions in a similar format if needed
+                    ]
+                    print(response_data)
+                    predictions_list.extend(response_data)
 
-                        most_likely_prob_percent = max(probs) * 100
+                # Join predictions with newlines
+                predictions = predictions_list
 
-                        response_data = [
-                            {
-                                'prediction': f"{first_item} {most_likely_outcome[0]} vs {second_item} {most_likely_outcome[1]}",
-                                'over_2.5_prob': f"{threematch_goals_probability}%",
-                                'over_1.5_prob': f"{twomatch_goals_probability}%"
-                            },
-                            
-                        ]
-                        # if response_data:
-                        #     for data in response_data:
-                        #         print(response_data)
-                        predictions_list.extend(response_data)
-                            
-                        # else:
-                        #     predictions = 'No Predictions Available'
-                        
-
-                    # Join predictions with newlines
-                    predictions = predictions_list
-
-                except Exception as e:
-                    predictions = f'Error: {str(e)}'
-            else:
-                predictions = 'No Predictions Available'
+            except Exception as e:
+                predictions = f'Error: {str(e)}'
 
         context = {'predictions': predictions}
         return render(request, 'scoracle.html', context)
