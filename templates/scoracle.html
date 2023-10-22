@@ -7130,20 +7130,20 @@ Custom CSS
 
             <form action="{% url 'leagueprediction' %}" method="POST">
               {% csrf_token %}
-              <input
+              <!-- <input
                 type="search"
                 class="form-control"
                 name="league"
                 placeholder="Enter league. Example: 'England' for the English Premier League, 'Italy2' for the Italian Serie B"
-              />
+              /> -->
               <!-- <input type="text" id="league-select" class="form-control" onkeyup="filterLeagues()" placeholder="Search for a league..."> -->
               
 
               <div class="form-group"> 
                 <select class="form-control" id="exampleFormControlSelect1" name="league">
                   <option>Choose League</option>
-                  <option value="england">English Premier League </option>
-                  <option value="england2">English Championship</option>
+                  <option value="england">🇬🇧 English Premier League </option>
+                  <option value="england2">🇬🇧 English Championship</option>
                   <option value="spain">🇪🇸 La Liga</option>
                   <option value="spain2">🇪🇸 La Liga 2</option>
                   <option value="germany">🇩🇪 Bundesliga</option>
@@ -7162,7 +7162,7 @@ Custom CSS
                   <option value="switzerland">🇨🇭 Swiss Super League</option>
                   <option value="greece">🇬🇷 Super League Greece</option>
                   <option value="ukraine">🇺🇦 Ukrainian Premier League</option>
-                  <option value="scotland">Scottish Premiership</option>
+                  <option value="scotland">🇬🇧 Scottish Premiership</option>
                   <option value="denmark">🇩🇰 Danish Superliga</option>
                   <option value="sweden">🇸🇪 Allsvenskan</option>
                   <option value="norway">🇳🇴 Eliteserien</option>
@@ -7187,7 +7187,7 @@ Custom CSS
                   <option value="cyprus">🇨🇾 Cypriot First Division</option>
                   <option value="israel">🇮🇱 Israeli Premier League</option>
                   <option value="malta">🇲🇹 Maltese Premier League</option>
-                  <option value="wales">Welsh Cymru Premier</option>
+                  <option value="wales">🇬🇧 Welsh Cymru Premier</option>
                   <option value="iceland">🇮🇸 Úrvalsdeild karla</option>
                   <option value="faroeislands">🇫🇴 Betri deildin</option>
                   <option value="faroeislands2">🇫🇴 1. deild</option>
