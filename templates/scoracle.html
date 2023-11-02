@@ -7245,20 +7245,21 @@ Custom CSS
             <div class="code-window">
               <div class="text-center">
                 <h1>
-                  Predictions
-                  <button onclick="copyCode()" class="btn btn-success">
+                  Predictions for {{date}}
+                  <!-- <button onclick="copyCode()" class="btn btn-success">
                     <i class="far fa-copy"></i>
-                  </button>
+                  </button> -->
                 </h1>
               </div>
               <pre class="text-center codeCopy">
                       {% if predictions == 'No Predictions Available' %}
                       <p>No Predictions Available</p>
                       {% else %}
-                        <table class="table">
+                        <table class="table table-bordered">
                           <thead>
                             <tr>
                               <th scope="col">Prediction</th>
+                              <th scope="col">Likely Scorelines</th>
                               <th scope="col">Over 2.5</th>
                               <th scope="col">Over 1.5</th>
                             </tr>
@@ -7267,7 +7268,7 @@ Custom CSS
                             {% for result in predictions %}
                             <tr>
                               <td>{{ result.prediction }}</td>
-                                                            
+                          
                               {% for key, value in result.items %}
                               {% if key == 'over_2.5_prob' %}
                               <td>{{ value }}</td>

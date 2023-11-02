@@ -227,12 +227,12 @@ def contact(request):
 
 
 class XPrediction(View):
-    template_name = 'scoracle.html'
+    template_name = 'outcome.html'
 
     def get(self, request):
         predictions = 'No Predictions Available'
         context = {'predictions': predictions}
-        return render(request, 'scoracle.html', context)
+        return render(request, XPrediction.template_name, context)
 
     def post(self, request):
         predictions = 'No Predictions Available'
@@ -414,4 +414,4 @@ class XPrediction(View):
                 predictions = f'Error: {str(e)}'
 
         context = {'predictions': predictions}
-        return render(request, 'scoracle.html', context)
+        return render(request, XPrediction.template_name, context)
