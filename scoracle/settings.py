@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 import environ
 env = environ.Env()
-environ.Env.read_env() 
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['scoracle.onrender.com','127.0.0.1']
+ALLOWED_HOSTS = ['scoracle.onrender.com', '127.0.0.1']
 
 
 # Application definition
@@ -123,7 +123,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(
-    BASE_DIR , 'media'
+    BASE_DIR, 'media'
 )
 
 # Default primary key field type

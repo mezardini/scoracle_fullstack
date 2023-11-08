@@ -7239,17 +7239,31 @@ Custom CSS
             </form>
           </div>
         </div>
-
         <div class="row mt-5" style="margin-top: 5%">
           <div class="col-md-9 mx-auto">
             <div class="code-window">
               <div class="text-center">
-                <h1>
+                <h3>
+                  Bet Tips For Today
+                  <button onclick="copyCode()" class="btn btn-success">
+                    <i class="far fa-copy"></i>
+                  </button>
+                </h3>
+              </div>
+              <pre class="text-center codeCopy"> <i class="fa fa-lock"></i> <p>Locked, pay to access</p></pre>           
+            </div>
+          </div>
+        </div>
+        <div class="row mt-5" style="margin-top: 5%">
+          <div class="col-md-9 mx-auto">
+            <div class="code-window">
+              <div class="text-center">
+                <h6>
                   Predictions
                   <button onclick="copyCode()" class="btn btn-success">
                     <i class="far fa-copy"></i>
                   </button>
-                </h1>
+                </h6>
               </div>
               <pre class="text-center codeCopy">
                       {% if predictions == 'No Predictions Available' %}
@@ -7277,7 +7291,7 @@ Custom CSS
                               {% if key == 'over_1.5_prob' %}
                               <td>{{ value }}</td>
                               {% endif %}
-                              {% endfor %}<!-- Corrected key to 'over_1.5_prob' -->
+                              {% endfor %}
                             </tr>
                             {% endfor %}
                           </tbody>
@@ -7288,8 +7302,10 @@ Custom CSS
           </div>
         </div>
       </div>
-    </section>
+      
 
+    </section>
+    
     <div id="howitworks" class="modal fade" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
