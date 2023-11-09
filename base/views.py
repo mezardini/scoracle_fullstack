@@ -226,13 +226,6 @@ def outcome(request):
 
 
 def xpredict(request):
-    predictions = 'No Predictions Available'
-
-    # if request.method == 'POST':
-    # league_form = request.POST['league']
-    # league = str(league_form)
-    # urlavgtable = f'https://www.soccerstats.com/table.asp?league={league}&tid=d'
-    # urlfixture = f'https://www.soccerstats.com/latest.asp?league={league}'
     url = 'https://www.soccerstats.com/matches.asp?matchday=1&listing=1'
 
     try:
@@ -389,7 +382,8 @@ def xpredict(request):
                         'away_team': f"{second_item}",
                         'away_goal': f"{most_likely_outcome[1]}",
                         'over_2.5_prob': f"{threematch_goals_probability}%",
-                        'over_1.5_prob': f"{twomatch_goals_probability}%"
+                        'over_1.5_prob': f"{twomatch_goals_probability}%",
+                        'league': league,
                     },
                     # Add more predictions in a similar format if needed
                 ]
@@ -401,12 +395,13 @@ def xpredict(request):
         predictions = all_response_data
         predictionx = Prediction.objects.create(content=predictions)
         predictionx.save()
+        return redirect('outcome')
 
     except Exception as e:
-        predictions = f'Error: {str(e)}'
+        return redirect('outcome')
 
-    context = {'predictions': predictions}
-    return render(request, 'outcome.html', context)
+    # context = {'predictions': predictions}
+    # return render(request, 'outcome.html', context)
 
 
 class XPrediction(View):
