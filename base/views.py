@@ -207,13 +207,13 @@ def outcome(request):
 
     # current_datetime = datetime.now()
     current_datetime = datetime.today().strftime("%d %b, %y %H:%M:%S")
-    # send_mail(
-    #     'New Visitor',
-    #     'A visitor ' + visitor_ip + ' has been on scoracle at ' + current_datetime,
-    #     'settings.EMAIL_HOST_USER',
-    #     ['mezardini@gmail.com'],
-    #     fail_silently=False,
-    # )
+    send_mail(
+        'New Visitor',
+        'A visitor ' + visitor_ip + ' has been on scoracle at ' + current_datetime,
+        'settings.EMAIL_HOST_USER',
+        ['mezardini@gmail.com'],
+        fail_silently=False,
+    )
     todays_predictions = 'No Predictions Available'
     today = date.today()
     print(today)
@@ -223,6 +223,12 @@ def outcome(request):
         return redirect('xpredict')
     context = {'predictions': todays_predictions.content, 'date': today}
     return render(request, 'outcome.html', context)
+
+
+def pastpredictions(request):
+    predictions = Prediction.objects.all().order_by('-date')
+    context = {'predictions': predictions}
+    return render(request, 'pastpredictions.html', context)
 
 
 def xpredict(request):
@@ -274,7 +280,6 @@ def xpredict(request):
         # Create a new list with countries that are available in the alt text
         available_countries = [
             country for country in countries_to_check if country in unique_alt_texts]
-        print("Available countries:", available_countries)
 
         all_response_data = []
         added_matches = set()
@@ -336,11 +341,10 @@ def xpredict(request):
                 if first_item in teams:
                     row_list = league_data[league]['rows'][teams.index(
                         first_item)]
-                    print(first_item)
+
                 if second_item in teams:
                     row_listaway = league_data[league]['rows'][teams.index(
                         second_item)]
-                    print(second_item)
 
                 H1 = ("{:0.2f}".format(float(row_list[6])/H3))
 
