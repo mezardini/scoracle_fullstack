@@ -10,4 +10,5 @@ urlpatterns = [
     path('xprediction/', XPrediction.as_view(), name="xprediction"),
     path('outcome/', views.outcome, name='outcome'),
     path('xpredict/', views.xpredict, name='xpredict'),
+    path('pastpredictions/', views.pastpredictions, name='pastpredictions'),
 ]
