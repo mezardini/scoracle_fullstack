@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from bs4 import BeautifulSoup
 import requests
@@ -219,6 +219,13 @@ def outcome(request):
     print(today)
     if Prediction.objects.filter(date=today).exists():
         todays_predictions = Prediction.objects.get(date=today)
+
+        # Assuming todays_predictions.content is a list of dictionaries
+        predictions_data = todays_predictions.content
+
+        # Sort the list based on 'over_1.5_prob' in descending order
+        predictions_data = sorted(
+            predictions_data, key=lambda x: x['over_1.5_prob'], reverse=True)
     else:
         return redirect('xpredict')
     context = {'predictions': todays_predictions.content, 'date': today}
@@ -597,3 +604,14 @@ class XPrediction(View):
 
         context = {'predictions': predictions}
         return render(request, XPrediction.template_name, context)
+
+
+def vipsection(request):
+    return render(request, 'vippage.html')
+
+
+def error_404_view(request, exception):
+
+    # we add the path to the 404.html file
+    # here. The name of our HTML file is 404.html
+    return render(request, '404.html')
