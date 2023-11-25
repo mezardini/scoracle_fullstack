@@ -7127,116 +7127,9 @@ Custom CSS
               matches.
              
             </p>
+            <a href="" data-bs-toggle="modal" data-bs-target="#howitworks" style="cursor: pointer">How it works</a>
 
-            <form action="{% url 'xprediction' %}" method="POST">
-              {% csrf_token %}
-              <!-- <input
-                type="search"
-                class="form-control"
-                name="league"
-                placeholder="Enter league. Example: 'England' for the English Premier League, 'Italy2' for the Italian Serie B"
-              /> -->
-              <!-- <input type="text" id="league-select" class="form-control" onkeyup="filterLeagues()" placeholder="Search for a league..."> -->
-              
-
-              <div class="form-group"> 
-                <select class="form-control" id="exampleFormControlSelect1" name="league">
-                  <option>Choose League</option>
-                  <option value="england">🇬🇧 English Premier League </option>
-                  <option value="england2">🇬🇧 English Championship</option>
-                  <option value="spain">🇪🇸 La Liga</option>
-                  <option value="spain2">🇪🇸 La Liga 2</option>
-                  <option value="germany">🇩🇪 Bundesliga</option>
-                  <option value="germany2">🇩🇪 Bundesliga 2</option>
-                  <option value="italy">🇮🇹 Serie A</option>
-                  <option value="italy2">🇮🇹 Serie B</option>
-                  <option value="france">🇫🇷 Ligue 1</option>
-                  <option value="france2">🇫🇷 Ligue 2</option>
-                  <option value="netherlands">🇳🇱 Eredivisie</option>
-                  <option value="netherlands2">🇳🇱 Eerstedivisie</option>
-                  <option value="portugal">🇵🇹 Primeira Liga</option>
-                  <option value="russia">🇷🇺 Russian Premier League</option>
-                  <option value="belgium">🇧🇪 Belgian First Division A</option>
-                  <option value="turkey">🇹🇷 Süper Lig</option>
-                  <option value="austria">🇦🇹 Austrian Bundesliga</option>
-                  <option value="switzerland">🇨🇭 Swiss Super League</option>
-                  <option value="greece">🇬🇷 Super League Greece</option>
-                  <option value="ukraine">🇺🇦 Ukrainian Premier League</option>
-                  <option value="scotland">🇬🇧 Scottish Premiership</option>
-                  <option value="denmark">🇩🇰 Danish Superliga</option>
-                  <option value="sweden">🇸🇪 Allsvenskan</option>
-                  <option value="norway">🇳🇴 Eliteserien</option>
-                  <option value="finland">🇫🇮 Veikkausliiga</option>
-                  <option value="ireland">🇮🇪 League of Ireland Premier Division</option>
-                  <option value="poland">🇵🇱 Ekstraklasa</option>
-                  <option value="czechrepublic">🇨🇿 Czech First League</option>
-                  <option value="hungary">🇭🇺 Hungarian Nemzeti Bajnokság</option>
-                  <option value="romania">🇷🇴 Liga I</option>
-                  <option value="croatia">🇭🇷 Prva HNL</option>
-                  <option value="bulgaria">🇧🇬 First Professional Football League</option>
-                  <option value="serbia">🇷🇸 Serbian SuperLiga</option>
-                  <option value="slovakia">🇸🇰 Slovak Super Liga</option>
-                  <option value="slovenia">🇸🇮 Slovenian PrvaLiga</option>
-                  <option value="bosnia">🇧🇦 Premier League of Bosnia and Herzegovina</option>
-                  <option value="montenegro">🇲🇪 First League of Montenegro</option>
-                  <option value="northmacedonia">🇲🇰 Macedonian First Football League</option>
-                  <option value="estonia">🇪🇪 Meistriliiga</option>
-                  <option value="latvia">🇱🇻 Latvian Higher League</option>
-                  <option value="lithuania">🇱🇹 A Lyga</option>
-                  <option value="luxembourg">🇱🇺 National Division</option>
-                  <option value="cyprus">🇨🇾 Cypriot First Division</option>
-                  <option value="israel">🇮🇱 Israeli Premier League</option>
-                  <option value="malta">🇲🇹 Maltese Premier League</option>
-                  <option value="wales">🇬🇧 Welsh Cymru Premier</option>
-                  <option value="iceland">🇮🇸 Úrvalsdeild karla</option>
-                  <option value="faroeislands">🇫🇴 Betri deildin</option>
-                  <option value="faroeislands2">🇫🇴 1. deild</option>
-                  <option value="iceland2">🇮🇸 1. deild karla</option>
-                  <option value="greenland2">🇬🇱 Greenlandic Football Championship 2</option>
-                  <option value="australia">🇦🇺 ALeague</option>
-                  <option value="argentina">🇦🇷 Argentine Primera División</option>
-                  <option value="brazil">🇧🇷 Campeonato Brasileiro Série A</option>
-                  <option value="usa">🇺🇸 Major League Soccer</option>
-                  <option value="mexico">🇲🇽 Liga MX</option>
-                  <option value="canada">🇨🇦 Canadian Premier League</option>
-                  <option value="japan">🇯🇵 J1 League</option>
-                  <option value="southkorea">🇰🇷 K League 1</option>
-                  <option value="china">🇨🇳 Chinese Super League</option>
-                  <option value="india">🇮🇳 Indian Super League</option>
-                  <option value="saudiarabia">🇸🇦 Saudi Professional League</option>
-                  <option value="uae">🇦🇪 UAE Pro League</option>
-                  <option value="qatar">🇶🇦 Qatar Stars League</option>
-                  <option value="egypt">🇪🇬 Egyptian Premier League</option>
-                  <option value="tunisia">🇹🇳 Ligue Professionnelle 1</option>
-                  <option value="morocco">🇲🇦 Botola Pro</option>
-                  <option value="cameroon">🇨🇲 Elite One</option>
-                  <option value="nigeria">🇳🇬 Nigerian Professional Football League</option>
-                  <option value="zambia">🇿🇲 Zambian Super League</option>
-                  <option value="zimbabwe">🇿🇼 Premier Soccer League</option>
-                  <option value="kenya">🇰🇪 Kenyan Premier League</option>
-                  <option value="tanzania">🇹🇿 Ligi Kuu Bara</option>
-                  <option value="mozambique">🇲🇿 Moçambola</option>
-                  <option value="ethiopia">🇪🇹 Ethiopian Premier League</option>
-                  <option value="uganda">🇺🇬 StarTimes Uganda Premier League</option>
-                  <option value="algeria">🇩🇿 Ligue 1</option>
-                  <option value="senegal">🇸🇳 Senegal Premier League</option>
-                  <option value="jordan">🇯🇴 Jordan Premier League</option>
-                  <option value="lebanon">🇱🇧 Lebanese Premier League</option>
-                  <option value="kuwait">🇰🇼 Kuwait Premier League</option>
-                  <option value="oman">🇴🇲 Oman Professional League</option>
-                  <option value="uae2">🇦🇪 UAE Division 1</option>
-                  <option value="saudiarabia2">🇸🇦 Saudi Second Division</option>
-                  <option value="iran">🇮🇷 Persian Gulf Pro League</option>
-                  <option value="iraq">🇮🇶 Iraqi Premier League</option>
-                  <option value="syria">🇸🇾 Syrian Premier League</option>
-
-                </select>
-              </div>
-              <br />
-              <button class="btn btn-success svg-icon" type="submit">
-                Predict
-              </button>
-            </form>
+           
           </div>
         </div>
 
@@ -7245,7 +7138,7 @@ Custom CSS
             <div class="code-window">
               <div class="text-center">
                 <h1>
-                  Predictions for {{date}}
+                  Predictions For Today,  {{date}}
                   <!-- <button onclick="copyCode()" class="btn btn-success">
                     <i class="far fa-copy"></i>
                   </button> -->
@@ -7292,9 +7185,16 @@ Custom CSS
                         </table>
                       {% endif %}
                     </pre>
-            </div>
+                    <div class="text-center">
+                      <h3><a href="{% url 'home' %}" style="cursor: pointer">Predict Specific League</a></h3>
+                      <div class="dropdown-divider"></div>
+                      <h3><a href="{% url 'pastpredictions' %}"  style="cursor: pointer">Check Past Predictions</a></h3>
+                    </div>
+              </div>
           </div>
+          
         </div>
+        
       </div>
     </section>
 
