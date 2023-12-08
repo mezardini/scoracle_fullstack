@@ -12,7 +12,7 @@ from .models import Prediction
 
 
 # In-memory storage for league data
-league_data = {}
+# league_data = {}
 
 # Create your views here.
 
@@ -386,6 +386,7 @@ def xpredict(request):
                         'league': league,
                     }
                     all_response_data.append(response_data)
+                    print(all_response_data)
 
         # Store predictions in the database
         predictionx = Prediction.objects.create(content=all_response_data)
