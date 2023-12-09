@@ -7152,8 +7152,9 @@ Custom CSS
                           <thead>
                             <tr>
                               <th class="text-center" scope="col">Match</th>
-                              <th class="text-center" scope="col">Predicted Score</th>
-                              <th class="text-center" scope="col">1 X 2</th>
+                              <th class="text-center" scope="col">Predicted Score 
+                                <br> <small>Top Probable Scorelines</small></th>
+                              <!-- <th class="text-center" scope="col">1 X 2</th> -->
                               <th class="text-center" scope="col">Over 1.5</th>
                               <th class="text-center" scope="col">Over 2.5</th>
                             </tr>
@@ -7163,14 +7164,15 @@ Custom CSS
                             <tr>
                               <td>{{ result.home_team }} vs {{ result.away_team }}</td>
                               <td class="text-center"><strong style="font-weight: bold; font-size: larger;">{{ result.home_goal }} - {{result.away_goal }}
-                              {% for scoreline in result.top_scorelines %}
+                                <br>
+                                {% for scoreline in result.top_scorelines %}
                               <small>{{ scoreline }}</small>
                               {% endfor %}
                               </strong></td>
                                   
                             
-                              <!-- New column for match winner prediction -->
-                              <!-- <td class="text-center">{{ result.match_result }} ({{ result.match_result_prob }})</td> -->
+                              <!-- New column for match winner prediction ({{ result.match_result_prob }})-->
+                              <!-- <td class="text-center">{{ result.match_result }} </td> -->
                             
                               <!-- Existing columns -->
                               {% for key, value in result.items %}
