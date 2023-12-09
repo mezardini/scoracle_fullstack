@@ -5,7 +5,7 @@
     white-space: pre-line;
   }
 
-  /* Style the collapsible content. Note: hidden by default */
+  /* Style the collapsible  Note: hidden by default */
   .content {
     padding: 0 18px;
     display: none;
@@ -7153,7 +7153,7 @@ Custom CSS
                             <tr>
                               <th class="text-center" scope="col">Match</th>
                               <th class="text-center" scope="col">Predicted Score</th>
-                              <!-- <th class="text-center" scope="col">1 X 2</th> -->
+                              <th class="text-center" scope="col">1 X 2</th>
                               <th class="text-center" scope="col">Over 1.5</th>
                               <th class="text-center" scope="col">Over 2.5</th>
                             </tr>
@@ -7161,26 +7161,39 @@ Custom CSS
                           <tbody>
                             {% for result in predictions %}
                             <tr>
-                              <td >{{ result.content.home_team }}  vs {{ result.content.away_team }} 
-                              
-                              </td>
-                              <td class="text-center"> <strong style="font-weight: bold; font-size: larger;"> {{ result.content.home_goal }} - {{ result.content.away_goal }}</strong> </td>
-                              <!-- <td class="text-center">1
-                              
-                              </td> -->
-                              
-                              {% for key, value in result.content.items %}
+                              <td>{{ result.home_team }} vs {{ result.away_team }}</td>
+                              <td class="text-center"><strong style="font-weight: bold; font-size: larger;">{{ result.home_goal }} - {{result.away_goal }}
+                              <!-- {% for scoreline in result.top_scorelines %}
+                              <small>{{ scoreline }}</small>
+                              {% endfor %} -->
+                              </strong></td>
+                                  
+                            
+                              <!-- New column for match winner prediction -->
+                              <!-- <td class="text-center">{{ result.match_result }} ({{ result.match_result_prob }})</td> -->
+                            
+                              <!-- Existing columns -->
+                              {% for key, value in result.items %}
                               {% if key == 'over_2.5_prob' %}
                               <td class="text-center">{{ value }}</td>
                               {% endif %}
                               {% endfor %}
-                              {% for key, value in result.content.items %}
+                            
+                              {% for key, value in result.items %}
                               {% if key == 'over_1.5_prob' %}
                               <td class="text-center">{{ value }}</td>
                               {% endif %}
-                              {% endfor %}<!-- Corrected key to 'over_1.5_prob' -->
+                              {% endfor %}
+                            
+                              <!-- New column for probable scorelines -->
+                              <!-- <td class="text-center">
+                                {% for scoreline in result.probable_scorelines %}
+                                {{ scoreline.home }} - {{ scoreline.away }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                              </td> -->
                             </tr>
                             {% endfor %}
+
                           </tbody>
                         </table>
                       {% endif %}
@@ -7343,7 +7356,7 @@ Custom CSS
                 completeness, or reliability of the information presented. The
                 use of this website is at the user's own risk. We are not liable
                 for any losses or damages arising from the use of this website
-                or its content.
+                or its 
               </p>
 
               <p>
@@ -7495,10 +7508,10 @@ Custom CSS
         coll[i].addEventListener("click", function () {
           this.classList.toggle("active");
           var content = this.nextElementSibling;
-          if (content.style.display === "block") {
-            content.style.display = "none";
+          if (style.display === "block") {
+            style.display = "none";
           } else {
-            content.style.display = "block";
+            style.display = "block";
           }
         });
       }
