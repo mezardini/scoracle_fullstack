@@ -9,12 +9,14 @@ from django.core.mail import send_mail
 from django.views import View
 from datetime import datetime, date
 from .models import Prediction
-
+import telegram
 
 # In-memory storage for league data
-# league_data = {}
+league_data = {}
 
 # Create your views here.
+
+bot = telegram.Bot(token='settings.TELE_API_KEY')
 
 
 def auto_test(request):
@@ -230,17 +232,11 @@ def outcome(request):
     today = date.today()
     print(today)
     if Prediction.objects.filter(date=today).exists():
-        todays_predictions = Prediction.objects.get(date=today)
+        todays_predictions = Prediction.objects.filter(date=today)
 
-        # Assuming todays_predictions.content is a list of dictionaries
-        predictions_data = todays_predictions.content
-
-        # Sort the list based on 'over_1.5_prob' in descending order
-        predictions_data = sorted(
-            predictions_data, key=lambda x: x['over_1.5_prob'], reverse=True)
     else:
         return redirect('xpredict')
-    context = {'predictions': todays_predictions.content, 'date': today}
+    context = {'predictions': todays_predictions, 'date': today}
     return render(request, 'outcome.html', context)
 
 
@@ -270,12 +266,35 @@ def calculate_poisson_probs(lambda_home, lambda_away):
     return most_likely_outcome, most_likely_prob_percent
 
 
+def process_prediction_for_fixture(teams, home_avg, away_avg, row_list, row_list_away):
+    H1, H2 = float(row_list[6]) / home_avg, float(row_list_away[11]) / home_avg
+    home_goal = float(H1) * float(H2) * home_avg
+    A1, A2 = float(row_list[7]) / away_avg, float(row_list_away[10]) / away_avg
+    away_goal = float(A1) * float(A2) * away_avg
+
+    threematch_goals_probability = "{:0.2f}".format(
+        (1 - poisson.cdf(k=3, mu=home_goal + away_goal)) * 100)
+    twomatch_goals_probability = "{:0.2f}".format(
+        (1 - poisson.cdf(k=2, mu=home_goal + away_goal)) * 100)
+
+    most_likely_outcome, most_likely_prob_percent = calculate_poisson_probs(
+        home_goal, away_goal)
+
+    return {
+        'home_team': teams[0],
+        'home_goal': str(most_likely_outcome[0]),
+        'away_team': teams[1],
+        'away_goal': str(most_likely_outcome[1]),
+        'over_2_prob': twomatch_goals_probability + '%',
+        'over_3_prob': threematch_goals_probability + '%',
+    }
+
+
 def xpredict(request):
     base_url = 'https://www.soccerstats.com/'
     matchday_url = f'{base_url}matches.asp?matchday=1&listing=1'
 
     try:
-        # Fetch data for matchday
         matchday_soup = fetch_data(matchday_url)
         if not matchday_soup:
             return redirect('outcome')
@@ -316,10 +335,7 @@ def xpredict(request):
         available_countries = [
             country for country in countries_to_check if country in unique_alt_texts]
 
-        all_response_data = []
-
         for league in available_countries:
-            # Fetch data for league table
             avgtable_url = f'{base_url}table.asp?league={league}&tid=d'
             avgtable_soup = fetch_data(avgtable_url)
             if not avgtable_soup:
@@ -331,7 +347,6 @@ def xpredict(request):
             league_data = {'header': header, 'rows': [
                 [col.text.strip() for col in row] for row in rows[1:]]}
 
-            # Fetch data for fixture list and predictions
             fixture_url = f'{base_url}latest.asp?league={league}'
             fixture_soup = fetch_data(fixture_url)
             if not fixture_soup:
@@ -341,9 +356,8 @@ def xpredict(request):
             cols = [col.text.strip() for row in odd_rows for col in row.find_all('td', {'style': [
                 'text-align:right;padding-right:8px;', 'text-align:left;padding-left:8px;']})]
 
-            # Extract teams and other information
             teams = [row[0] for row in league_data['rows']]
-            home_avg = away_avg = 100.000
+            home_avg, away_avg = 100.000, 100.000
             table = fixture_soup.find(
                 "table", style="margin-left:14px;margin-riht:14px;border:1px solid #aaaaaa;border-radius:12px;overflow:hidden;")
             if table:
@@ -353,7 +367,6 @@ def xpredict(request):
                 if len(b_tags) >= 11:
                     away_avg = float(b_tags[10].text)
 
-            # Perform calculations and store predictions
             for i in range(0, len(cols), 2):
                 first_item, second_item = cols[i], cols[i + 1]
                 if first_item in teams and second_item in teams:
@@ -361,40 +374,32 @@ def xpredict(request):
                         first_item), teams.index(second_item)
                     row_list, row_list_away = league_data['rows'][home_index], league_data['rows'][away_index]
 
-                    H1, H2 = float(
-                        row_list[6]) / home_avg, float(row_list_away[11]) / home_avg
-                    home_goal = float(H1) * float(H2) * home_avg
-                    A1, A2 = float(
-                        row_list[7]) / away_avg, float(row_list_away[10]) / away_avg
-                    away_goal = float(A1) * float(A2) * away_avg
+                    prediction_data = process_prediction_for_fixture(
+                        teams, home_avg, away_avg, row_list, row_list_away)
 
-                    threematch_goals_probability = "{:0.2f}".format(
-                        (1 - poisson.cdf(k=3, mu=home_goal + away_goal)) * 100)
-                    twomatch_goals_probability = "{:0.2f}".format(
-                        (1 - poisson.cdf(k=2, mu=home_goal + away_goal)) * 100)
+                    # Save prediction to the database
+                    Prediction.objects.create(
+                        content=prediction_data, league=league, date=date.today())
 
-                    most_likely_outcome, most_likely_prob_percent = calculate_poisson_probs(
-                        home_goal, away_goal)
-
-                    response_data = {
-                        'home_team': first_item,
-                        'home_goal': str(most_likely_outcome[0]),
-                        'away_team': second_item,
-                        'away_goal': str(most_likely_outcome[1]),
-                        'over_2.5_prob': twomatch_goals_probability + '%',
-                        'over_1.5_prob': threematch_goals_probability + '%',
-                        'league': league,
-                    }
-                    all_response_data.append(response_data)
-                    print(all_response_data)
-
-        # Store predictions in the database
-        predictionx = Prediction.objects.create(content=all_response_data)
-        predictionx.save()
         return redirect('outcome')
 
     except Exception as e:
         return redirect('outcome')
+
+
+def send_games_to_telegram():
+    predictions_queryset = Prediction.objects.filter(date=date.today())
+
+    message = "Predictions for today:\n\n"
+    for prediction in predictions_queryset:
+        message += f"<b>{prediction.content.home_team} vs {prediction.content.away_team}</b>\n"
+        message += f"Home Goal: {prediction.content.home_goal}\n"
+        message += f"Away Goal: {prediction.content.away_goal}\n"
+        message += f"Over 2.5 Probability: {prediction.content.over_3_prob}\n"
+        message += f"Over 1.5 Probability: {prediction.content.over_2_prob}\n"
+        message += f"League: {prediction.content.league}\n\n"
+
+    bot.send_message(chat_id='@scoraclepredictions', text=message)
 
 
 class XPrediction(View):

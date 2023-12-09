@@ -1,5 +1,4 @@
 <style>
- 
   pre {
     text-align: left;
     white-space: pre-line;
@@ -7073,8 +7072,10 @@ Custom CSS
     <link rel="stylesheet" href="css/bootstrap.css" />
     <link rel="stylesheet" href="css/fontawesome.css" />
     <link rel="stylesheet" href="css/fontawesome.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css"
+    />
   </head>
 
   <body>
@@ -7120,30 +7121,29 @@ Custom CSS
             </p>
           </div> -->
           <div class="col-md-8 mx-auto text-center">
-            <h1>Scoracle Football Predictor </h1>
+            <h1>Scoracle Football Predictor</h1>
             <p class="lead mb-5">
               Scoracle is an AI powered predictor that uses machine learning
               algorithm and poisson formula to predict the outcome of football
               matches.
-             
             </p>
-            <a href="" data-bs-toggle="modal" data-bs-target="#howitworks" style="cursor: pointer">How it works</a>
-
-           
           </div>
         </div>
 
+        <!-- <h1 class="text-capitalize text-center">TOP PREDICTIONS FOR TODAY</h1> -->
+        {% for objects in predictions %}
         <div class="row mt-5" style="margin-top: 5%">
           <div class="col-md-9 mx-auto">
             <div class="code-window">
               <div class="text-center">
                 <h1>
-                  Predictions For Today,  {{date}}
+                  Predictions for {{objects.date}}
                   <!-- <button onclick="copyCode()" class="btn btn-success">
                     <i class="far fa-copy"></i>
                   </button> -->
                 </h1>
               </div>
+
               <pre class="text-center codeCopy">
                       {% if predictions == 'No Predictions Available' %}
                       <p>No Predictions Available</p>
@@ -7154,27 +7154,27 @@ Custom CSS
                               <th class="text-center" scope="col">Match</th>
                               <th class="text-center" scope="col">Predicted Score</th>
                               <!-- <th class="text-center" scope="col">1 X 2</th> -->
-                              <th class="text-center" scope="col">Over 1.5</th>
                               <th class="text-center" scope="col">Over 2.5</th>
+                              <th class="text-center" scope="col">Over 1.5</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {% for result in predictions %}
+                            {% for result in objects.content %}
                             <tr>
-                              <td >{{ result.content.home_team }}  vs {{ result.content.away_team }} 
+                              <td >{{ result.home_team }}  vs {{ result.away_team }} 
                               
                               </td>
-                              <td class="text-center"> <strong style="font-weight: bold; font-size: larger;"> {{ result.content.home_goal }} - {{ result.content.away_goal }}</strong> </td>
+                              <td class="text-center"> <strong style="font-weight: bold; font-size: larger;"> {{ result.home_goal }} - {{ result.away_goal }}</strong> </td>
                               <!-- <td class="text-center">1
                               
                               </td> -->
                               
-                              {% for key, value in result.content.items %}
+                              {% for key, value in result.items %}
                               {% if key == 'over_2.5_prob' %}
                               <td class="text-center">{{ value }}</td>
                               {% endif %}
                               {% endfor %}
-                              {% for key, value in result.content.items %}
+                              {% for key, value in result.items %}
                               {% if key == 'over_1.5_prob' %}
                               <td class="text-center">{{ value }}</td>
                               {% endif %}
@@ -7184,17 +7184,141 @@ Custom CSS
                           </tbody>
                         </table>
                       {% endif %}
-                    </pre>
-                    <div class="text-center">
-                      <h3><a href="{% url 'home' %}" style="cursor: pointer">Predict Specific League</a></h3>
-                      <div class="dropdown-divider"></div>
-                      <h3><a href="{% url 'pastpredictions' %}"  style="cursor: pointer">Check Past Predictions</a></h3>
-                    </div>
-              </div>
+                </pre>
+
+              <!-- <div class="text-center">
+                <h3>
+                  <a href="" style="cursor: pointer">Check Past Predictions</a>
+                </h3>
+              </div> -->
+            </div>
           </div>
-          
         </div>
+        {% endfor %}
+        <div class="row mt-5" style="margin-top: 5%">
+            <div class="col-md-9 mx-auto">
+                <div class="code-window">
+                    <div class="text-center">
+                        <h1>
+                            PICKS FOR TODAY - {{objects.date}}
+                            <!-- <button onclick="copyCode()" class="btn btn-success">
+                            <i class="far fa-copy"></i>
+                          </button> -->
+                        </h1>
+                    </div>
         
+                    <pre class="text-center codeCopy">
+                              {% if predictions == 'No Predictions Available' %}
+                              <p>No Predictions Available</p>
+                              {% else %}
+                                <table class="table table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th class="text-center" scope="col">Match</th>
+                                      <th class="text-center" scope="col">Predicted Score</th>
+                                      <!-- <th class="text-center" scope="col">1 X 2</th> -->
+                                      <th class="text-center" scope="col">Over 2.5</th>
+                                      <th class="text-center" scope="col">Over 1.5</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for result in objects.content %}
+                                    <tr>
+                                      <td >{{ result.home_team }}  vs {{ result.away_team }} 
+                                      
+                                      </td>
+                                      <td class="text-center"> <strong style="font-weight: bold; font-size: larger;"> {{ result.home_goal }} - {{ result.away_goal }}</strong> </td>
+                                      <!-- <td class="text-center">1
+                                      
+                                      </td> -->
+                                      
+                                      {% for key, value in result.items %}
+                                      {% if key == 'over_2.5_prob' %}
+                                      <td class="text-center">{{ value }}</td>
+                                      {% endif %}
+                                      {% endfor %}
+                                      {% for key, value in result.items %}
+                                      {% if key == 'over_1.5_prob' %}
+                                      <td class="text-center">{{ value }}</td>
+                                      {% endif %}
+                                      {% endfor %}<!-- Corrected key to 'over_1.5_prob' -->
+                                    </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              {% endif %}
+                        </pre>
+        
+                    <!-- <div class="text-center">
+                        <h3>
+                          <a href="" style="cursor: pointer">Check Past Predictions</a>
+                        </h3>
+                      </div> -->
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5" style="margin-top: 5%">
+            <div class="col-md-9 mx-auto">
+                <div class="code-window">
+                    <div class="text-center">
+                        <h1>
+                            PREDICTIONS FOR TODAY - {{objects.date}}
+                            <!-- <button onclick="copyCode()" class="btn btn-success">
+                                    <i class="far fa-copy"></i>
+                                  </button> -->
+                        </h1>
+                    </div>
+        
+                    <pre class="text-center codeCopy">
+                                      {% if predictions == 'No Predictions Available' %}
+                                      <p>No Predictions Available</p>
+                                      {% else %}
+                                        <table class="table table-bordered">
+                                          <thead>
+                                            <tr>
+                                              <th class="text-center" scope="col">Match</th>
+                                              <th class="text-center" scope="col">Predicted Score</th>
+                                              <!-- <th class="text-center" scope="col">1 X 2</th> -->
+                                              <th class="text-center" scope="col">Over 2.5</th>
+                                              <th class="text-center" scope="col">Over 1.5</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {% for result in objects.content %}
+                                            <tr>
+                                              <td >{{ result.home_team }}  vs {{ result.away_team }} 
+                                              
+                                              </td>
+                                              <td class="text-center"> <strong style="font-weight: bold; font-size: larger;"> {{ result.home_goal }} - {{ result.away_goal }}</strong> </td>
+                                              <!-- <td class="text-center">1
+                                              
+                                              </td> -->
+                                              
+                                              {% for key, value in result.items %}
+                                              {% if key == 'over_2.5_prob' %}
+                                              <td class="text-center">{{ value }}</td>
+                                              {% endif %}
+                                              {% endfor %}
+                                              {% for key, value in result.items %}
+                                              {% if key == 'over_1.5_prob' %}
+                                              <td class="text-center">{{ value }}</td>
+                                              {% endif %}
+                                              {% endfor %}<!-- Corrected key to 'over_1.5_prob' -->
+                                            </tr>
+                                            {% endfor %}
+                                          </tbody>
+                                        </table>
+                                      {% endif %}
+                                </pre>
+        
+                    <!-- <div class="text-center">
+                                <h3>
+                                  <a href="" style="cursor: pointer">Check Past Predictions</a>
+                                </h3>
+                              </div> -->
+                </div>
+            </div>
+        </div>
       </div>
     </section>
 
@@ -7523,35 +7647,36 @@ Custom CSS
     <script>
       // Function to filter leagues based on search input
       function filterLeagues() {
-        const input = document.getElementById('league-select');
-        const select = document.getElementById('exampleFormControlSelect1');
+        const input = document.getElementById("league-select");
+        const select = document.getElementById("exampleFormControlSelect1");
         const filter = input.value.toLowerCase();
-        const options = select.getElementsByTagName('option');
+        const options = select.getElementsByTagName("option");
 
         for (let i = 0; i < options.length; i++) {
           const option = options[i];
           if (option.value.indexOf(filter) > -1) {
-            option.style.display = '';
+            option.style.display = "";
           } else {
-            option.style.display = 'none';
+            option.style.display = "none";
           }
         }
       }
     </script>
-      <script>
-        // Function to show the select element when the input is focused
-        function showLeagues() {
-          document.getElementById('exampleFormControlSelect1').style.display = 'block';
-        }
+    <script>
+      // Function to show the select element when the input is focused
+      function showLeagues() {
+        document.getElementById("exampleFormControlSelect1").style.display =
+          "block";
+      }
 
-        // Function to hide the select element when the input loses focus
-        function hideLeagues() {
-          // Delay the hiding to allow clicking on the select element
-          setTimeout(function () {
-            document.getElementById('exampleFormControlSelect1').style.display = 'none';
-          }, 200);
-        }
-      </script>
-
+      // Function to hide the select element when the input loses focus
+      function hideLeagues() {
+        // Delay the hiding to allow clicking on the select element
+        setTimeout(function () {
+          document.getElementById("exampleFormControlSelect1").style.display =
+            "none";
+        }, 200);
+      }
+    </script>
   </body>
 </html>
