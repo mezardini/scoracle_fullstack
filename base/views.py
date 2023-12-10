@@ -19,16 +19,6 @@ league_data = {}
 # bot = telegram.Bot(token='settings.TELE_API_KEY')
 
 
-def auto_test(request):
-    send_mail(
-        'New Visitor',
-        'A visitor  has been on scoracle at ',
-        'settings.EMAIL_HOST_USER',
-        ['mezardini@gmail.com'],
-        fail_silently=False,
-    )
-    return redirect('home')
-
 
 def home(request):
     visitor_ip = visitor_ip = request.META.get('REMOTE_ADDR')
