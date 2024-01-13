@@ -7,10 +7,10 @@ urlpatterns = [
     path('', LeaguePrediction.as_view(), name="leagueprediction"),
     # # path('matchprediction/', MatchPrediction.as_view(), name="matchprediction"),
     path('contact/', views.contact, name='contact'),
-    # path('xprediction/', XPrediction.as_view(), name="xprediction"),
-    # path('outcome/', views.outcome, name='outcome'),
-    # path('xpredict/', views.xpredict, name='xpredict'),
-    # path('pastpredictions/', views.pastpredictions, name='pastpredictions'),
-    # # path('vip/', views.vipsection, name='vipsection'),
-    # path('auto', views.auto_test, name='auto_test'),
+    path('xprediction/', XPrediction.as_view(), name="xprediction"),
+    path('outcome/', views.outcome, name='outcome'),
+    path('xpredict/', views.xpredict, name='xpredict'),
+    path('pastpredictions/', views.pastpredictions, name='pastpredictions'),
+    # path('vip/', views.vipsection, name='vipsection'),
+
 ]

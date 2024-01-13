@@ -19,7 +19,6 @@ league_data = {}
 # bot = telegram.Bot(token='settings.TELE_API_KEY')
 
 
-
 def home(request):
     visitor_ip = visitor_ip = request.META.get('REMOTE_ADDR')
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -351,11 +350,15 @@ def xpredict(request):
                     row_list, row_list_away = league_data['rows'][home_index], league_data['rows'][away_index]
 
                     H1, H2 = float(
-                        row_list[6]) / home_avg, float(row_list_away[11]) / home_avg
-                    home_goal = float(H1) * float(H2) * home_avg
+                        row_list[6]) / float(
+                        row_list[2]), float(row_list_away[11]) / float(
+                        row_list[2])
+                    home_goal = float(H1) * float(H2) * float(
+                        row_list[2])
                     A1, A2 = float(
-                        row_list[7]) / away_avg, float(row_list_away[10]) / away_avg
-                    away_goal = float(A1) * float(A2) * away_avg
+                        row_list[7]) / float(row_list_away[2]), float(row_list_away[10]) / float(row_list_away[2])
+                    away_goal = float(A1) * float(A2) * \
+                        float(row_list_away[2])
 
                     threematch_goals_probability = "{:0.2f}".format(
                         (1 - poisson.cdf(k=3, mu=home_goal + away_goal)) * 100)
