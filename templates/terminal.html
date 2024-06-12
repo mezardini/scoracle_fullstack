@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Scoracle Terminal</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+
+  <link rel="stylesheet" type="text/css" href="{% static 'js/select.dataTables.min.css' %}" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css' %}" />
+  <!-- endinject -->
+  <link rel="shortcut icon" href="{% static 'images/faviconx.svg' %}" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5"><img src="{% static 'images/scoracle-logo.png' %}" class="mr-2"
+            alt="logo" /></a>
+        <a class="navbar-brand brand-logo-mini" "
+            ><img src=" {% static 'images/acclaimtrove-logo-mini.svg' %}" alt="logo" /></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+
+        <ul class="navbar-nav mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-nav-right">
+
+          <li class="nav-item nav-profile dropdown">
+            <div></div>
+           
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+              <!-- <h3 style="color: #504B8E;">{{company.company_name|first}}</h3> -->
+              <i class="fa fa-user-circle fa-3x" style="color: #504B8E;" width="200px"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+              
+              <a class="dropdown-item" href="">
+                <i class="fa fa-outdent"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+          <!-- <li class="nav-item nav-settings d-none d-lg-flex">
+            <a class="nav-link" href="#">
+              <i class="fa fa-users"></i>
+            </a>
+          </li> -->
+
+        </ul>
+
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_settings-panel.html -->
+
+
+      <!-- partial -->
+      <!-- partial:partials/_sidebar.html -->
+      <div id="right-sidebar" class="settings-panel">
+        <i class="settings-close ti-close"></i>
+        <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
+          <!-- <li class="nav-item">
+            <a class="nav-link active" id="todo-tab" data-toggle="tab" href="#todo-section" role="tab"
+              aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link" id="chats-tab" data-toggle="tab" href="#chats-section" role="tab"
+              aria-controls="chats-section">CHATS</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="setting-content">
+          
+          <!-- To do section tab ends -->
+          <div class="tab-pane fade show active scroll-wrapper" id="chats-section" role="tabpanel" aria-labelledby="chats-section">
+            <div class="d-flex align-items-center justify-content-between border-bottom">
+              <p class="settings-heading border-top-0 mb-3 pl-3 pt-0 border-bottom-0 pb-0">Friends</p>
+              <small class="settings-heading border-top-0 mb-3 pt-0 border-bottom-0 pb-0 pr-3 font-weight-normal">See
+                All</small>
+            </div>
+            <ul class="chat-list">
+              <li class="list active">
+                
+                <div class="info">
+                  <p>Thomas Douglas</p>
+                  <p>Available</p>
+                </div>
+                <small class="text-muted my-auto">19 min</small>
+              </li>
+              <li class="list">
+                
+                <div class="info">
+                  <div class="wrapper d-flex">
+                    <p>Catherine</p>
+                  </div>
+                  <p>Away</p>
+                </div>
+                
+                <small class="text-muted my-auto">23 min</small>
+              </li>
+              <li class="list">
+                <div class="info">
+              <form action="" method="POST" class="col-12">
+                {% csrf_token %}
+                <div class="container" id="initialFields">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="inputEmployeeName" name="employee_name" placeholder="Elon Musk">
+                  </div>
+                </div>
+              </form>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- chat tab ends -->
+        </div>
+      </div>
+      
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+            <!-- <li class="nav-item" id="item1">
+                <a class="nav-link" href="../../index.html">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">Top Picks - Today</span>
+                </a>
+            </li> -->
+            <li class="nav-item" id="item1">
+                <a class="nav-link" onclick="showContent(' today_pick')">
+                    <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">Predictions - Today</span>
+                    
+                </a>
+                
+            </li>
+            <li class="nav-item" id="item2">
+                <a class="nav-link" onclick="showContent('past_predictions')">
+                    <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">Past Predictions</span>
+            
+                </a>
+            
+            </li>
+            
+        </ul>
+    </nav>
+    <!-- partial -->
+    <div class="main-panel" id="main-panel">
+        <div class="content-wrapper">
+            <div class="row">
+                
+                <div class="col-lg-12 grid-margin stretch-card" id="todays_pick">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Predictions For Today, {{date}}</h4>
+                            <!-- <p class="card-description">
+                                Add class <code>.table-bordered</code>
+                            </p> -->
+                            <div class="table-responsive pt-3">
+                                <table class="table table-bordered table-dark">
+                                    <thead>
+                                        <tr>
+                                            
+                                            <th>Match</th>
+                                            <th  class="text-center">Predicted Score
+                                                <br> <small>Top Probable Scorelines</small>
+                                            </th>
+                                            <!-- <th class="text-center" scope="col">1 X 2</th> -->
+                                            <th class="text-center">Over 1.5</th>
+                                            <th class="text-center">Over 2.5</th>
+                                            <!-- <th class="text-center" scope="col">Home Win Prob.</th>
+                                                <th class="text-center" scope="col">Draw Prob.</th>
+                                                <th class="text-center" scope="col">Away Win Prob.</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for result in today_prediction %}
+                                        <tr>
+                                            <td>{{ result.home_team }} vs {{ result.away_team }}</td>
+                                            <td class="text-center"><strong style="font-weight: bold; font-size: larger;">
+                                        
+                                                    {{result.home_goal }} -
+                                                    {{result.away_goal }}
+                                                    <br>
+                                                    {% for scoreline in result.top_scorelines %}
+                                                    <small>{{ scoreline }}</small>
+                                                    {% endfor %}
+                                                </strong></td>
+                                        
+                                        
+                                            <!-- New column for match winner prediction ({{ result.match_result_prob }})-->
+                                            <!-- <td class="text-center">{{ result.match_result }} </td> -->
+                                        
+                                            <!-- Existing columns -->
+                                            {% for key, value in result.items %}
+                                            {% if key == 'over_2.5_prob' %}
+                                            <td class="text-center">{{ value }}</td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        
+                                            {% for key, value in result.items %}
+                                            {% if key == 'over_1.5_prob' %}
+                                            <td class="text-center">{{ value }}</td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        
+                                            <!-- {% for key, value in result.items %}
+                                                                                                                      {% if key == 'home_win_prob' %}
+                                                                                                                      <td class="text-center">{{ value }} %</td>
+                                                                                                                      {% endif %}
+                                                                                                                      {% endfor %}
+                                                                                        
+                                                                                                                      {% for key, value in result.items %}
+                                                                                                                      {% if key == 'draw_prob' %}
+                                                                                                                      <td class="text-center">{{ value }} %</td>
+                                                                                                                      {% endif %}
+                                                                                                                      {% endfor %}
+                                                                                        
+                                                                                                                      {% for key, value in result.items %}
+                                                                                                                      {% if key == 'away_win_prob' %}
+                                                                                                                      <td class="text-center">{{ value }} %</td>
+                                                                                                                      {% endif %}
+                                                                                                                      {% endfor %} -->
+                                        
+                                            <!-- New column for probable scorelines -->
+                                            <!-- <td class="text-center">
+                                                                                                                        {% for scoreline in result.probable_scorelines %}
+                                                                                                                        {{ scoreline.home }} - {{ scoreline.away }}{% if not forloop.last %}, {% endif %}
+                                                                                                                        {% endfor %}
+                                                                                                                      </td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12"  id="past_predictions" style="display: none;">
+                
+                    {% for objects in predictions|slice:5 %}
+                    <div class="card" id="accordionExampleLd{{objects.id}}">
+                        <div class="card-body">
+                            <span style="display: flex; justify-content: space-between;">
+                                <h4 class="card-title" class="card-title collapsed" type="button" data-toggle="collapse"
+                                    data-target="#collapseOneLd{{objects.id}}">Predictions for {{objects.date}}</h4>
+                
+                            </span>
+                            <div class="table-responsive collapse show" id="collapseOneLd{{objects.id}}" aria-labelledby="headingOne"
+                                data-parent="#accordionExampleLd{{objects.id}}">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Match</th>
+                                            <th class="text-center" scope="col">Predicted Score
+                                                <br> <small>Top Probable Scorelines</small>
+                                            </th>
+                                            <!-- <th class="text-center" scope="col">1 X 2</th> -->
+                                            <th class="text-center" scope="col">Over 1.5</th>
+                                            <th class="text-center" scope="col">Over 2.5</th>
+                                            <!-- <th class="text-center" scope="col">Home Win Prob.</th>
+                                                                          <th class="text-center" scope="col">Draw Prob.</th>
+                                                                          <th class="text-center" scope="col">Away Win Prob.</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for result in objects.content %}
+                                        <tr>
+                                            <td>{{ result.home_team }} vs {{ result.away_team }}</td>
+                                            <td class="text-center"><strong style="font-weight: bold; font-size: larger;">
+                                                    {{result.home_goal}}
+                                                     -
+                                                    {{result.away_goal }}
+                                                    <br>
+                                                    {% for scoreline in result.top_scorelines %}
+                                                    <small>{{ scoreline }}</small>
+                                                    {% endfor %}
+                                                </strong></td>
+                
+                
+                                            <!-- New column for match winner prediction ({{ result.match_result_prob }})-->
+                                            <!-- <td class="text-center">{{ result.match_result }} </td> -->
+                
+                                            <!-- Existing columns -->
+                                            {% for key, value in result.items %}
+                                            {% if key == 'over_2.5_prob' %}
+                                            <td class="text-center">{{ value }}</td>
+                                            {% endif %}
+                                            {% endfor %}
+                
+                                            {% for key, value in result.items %}
+                                            {% if key == 'over_1.5_prob' %}
+                                            <td class="text-center">{{ value }}</td>
+                                            {% endif %}
+                                            {% endfor %}
+                
+                                            <!-- {% for key, value in result.items %}
+                                                                      {% if key == 'home_win_prob' %}
+                                                                      <td class="text-center">{{ value }} %</td>
+                                                                      {% endif %}
+                                                                      {% endfor %}
+                                        
+                                                                      {% for key, value in result.items %}
+                                                                      {% if key == 'draw_prob' %}
+                                                                      <td class="text-center">{{ value }} %</td>
+                                                                      {% endif %}
+                                                                      {% endfor %}
+                                        
+                                                                      {% for key, value in result.items %}
+                                                                      {% if key == 'away_win_prob' %}
+                                                                      <td class="text-center">{{ value }} %</td>
+                                                                      {% endif %}
+                                                                      {% endfor %} -->
+                
+                                            <!-- New column for probable scorelines -->
+                                            <!-- <td class="text-center">
+                                                                        {% for scoreline in result.probable_scorelines %}
+                                                                        {{ scoreline.home }} - {{ scoreline.away }}{% if not forloop.last %}, {% endif %}
+                                                                        {% endfor %}
+                                                                      </td> -->
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                
+                        </div>
+                    </div>
+                    <br>
+                
+                    {% endfor %}
+                
+                </div>
+                
+            </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+            <div class="d-sm-flex justify-content-center ">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024. Premium <a
+                        href="https://www.scoracle.com/" target="_blank">Scoracle</a> All rights reserved.</span>
+                
+            </div>
+        </footer>
+        <!-- partial -->
+    </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <script>
+    function copyPollURL() {
+      // Get the URL value from the button
+      var url = document.getElementById("PollURL").value;
+
+      // Create a temporary input element
+      var tempInput = document.createElement("input");
+      tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+      tempInput.value = url;
+
+      // Append the input element to the document body
+      document.body.appendChild(tempInput);
+
+      // Select the input content
+      tempInput.select();
+
+      // Copy the selected content to the clipboard
+      document.execCommand("copy");
+
+      // Remove the temporary input element
+      document.body.removeChild(tempInput);
+
+      // Optionally provide feedback to the user
+      alert("URL copied to clipboard: " + url);
+    }
+  </script>
+  <script>
+    function showContent(contentId) {
+        // Hide all content first (optional, if you want to hide other content)
+        // document.querySelectorAll('.content').forEach(function(content) {
+        //     content.style.display = 'none';
+        // });
+
+        // Show the content for "Item 2"
+        document.getElementById(contentId).style.display = 'block';
+    }
+  </script>
+
+  <!-- plugins:js -->
+  <script src="{% static 'css/js/vendor.bundle.base.js' %}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <!-- <script src="{% static 'xvendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'xvendors/datatables.net/jquery.dataTables.js' %}"></script> -->
+  <script src="{% static 'css/datatables.net-bs4/dataTables.bootstrap4.js' %}"></script>
+  <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{% static 'js/off-canvas.js' %}"></script>
+  <script src="{% static 'js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'js/template.js' %}"></script>
+  <script src="{% static 'js/settings.js' %}"></script>
+  <script src="{% static 'js/todolist.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="{% static 'js/dashboard.js' %}"></script>
+    <script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script> 
+  <script>
+    document.getElementById('addFieldBtn').addEventListener('click', function () {
+      var additionalFieldsContainer = document.getElementById('additionalFields');
+      var initialFieldsContainer = document.getElementById('initialFields');
+
+      // Clone the structure of the initial form group only if it is visible
+      if (initialFieldsContainer.style.display !== 'none') {
+        var newFormGroup = initialFieldsContainer.cloneNode(true);
+
+        // Clear input values
+        var inputElements = newFormGroup.querySelectorAll('input');
+        inputElements.forEach(function (input) {
+          input.value = ''; // Clear the input value
+        });
+
+
+
+        // Append the cloned form group to the container
+        additionalFieldsContainer.appendChild(newFormGroup);
+      }
+    });
+  </script>
+
+  <!-- End custom js for this page-->
+</body>
+
+</html>

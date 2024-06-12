@@ -238,8 +238,25 @@ def outcome(request):
 
 def pastpredictions(request):
     predictions = Prediction.objects.all().order_by('-date')
-    context = {'predictions': predictions}
-    return render(request, 'pastpredictions.html', context)
+
+    todays_predictions = 'No Predictions Available'
+    today = date.today()
+    print(today)
+    if Prediction.objects.filter(date=today).exists():
+        todays_predictions = Prediction.objects.get(date=today)
+
+        # Assuming todays_predictions.content is a list of dictionaries
+        predictions_data = todays_predictions.content
+
+        # Sort the list based on 'over_1.5_prob' in descending order
+        predictions_data = sorted(
+            predictions_data, key=lambda x: x['over_1.5_prob'], reverse=True)
+
+    else:
+        return redirect('xpredict')
+    context = {'predictions': predictions,
+               'today_prediction': todays_predictions.content, 'date': today}
+    return render(request, 'terminal.html', context)
 
 
 def fetch_data(url):
@@ -295,9 +312,10 @@ def xpredict(request):
         table = matchday_soup.find('table', {'id': 'btable'})
         rows = table.find('tbody').find_all('tr')
         countries_to_check = [
-            'spain', 'england', 'italy', 'france', 'germany', 'germany2', 'portugal', 'netherlands', 'netherlands2',
-            'russia', 'belgium', 'turkey', 'ukraine', 'austria', 'switzerland', 'greece', 'scotland', 'croatia',
-            'sweden', 'norway', 'denmark', 'poland', 'spain2', 'england2', 'italy2', 'france2',
+            'spain', 'england', 'italy', 'france', 'germany', 'germany2', 'norway', 'norway2', 'iceland', 'sweden', 'sweden2', 'portugal', 'netherlands', 'netherlands2',
+            'russia', 'belgium', 'turkey', 'ukraine', 'faroeislands', 'czechrepublic', 'austria', 'switzerland', 'greece', 'scotland', 'croatia',
+            'denmark', 'poland', 'spain2', 'england2', 'italy2', 'france2', 'armenia', 'belarus', 'brazil', 'china', 'japan', 'southkorea', 'estonia',
+            'georgia', 'ireland', 'kazakhstan', 'latvia', 'lithuania', 'moldova', 'wales', 'vietnam', 'kazakhstan', 'finland'
         ]
         unique_alt_texts = {row.find('td').get(
             'sorttable_customkey', '') for row in rows if row.get('height') == '34'}
@@ -345,21 +363,91 @@ def xpredict(request):
             for i in range(0, len(cols), 2):
                 first_item, second_item = cols[i], cols[i + 1]
                 if first_item in teams and second_item in teams:
+                    # home_away_url = f'{base_url}homeaway.asp?league={league}'
+                    # home_away_soup = fetch_data(home_away_url)
+                    # if not home_away_soup:
+                    #     continue
+
+                    # div_h2h_team1 = home_away_soup.find("div", {"id": "h2h-team1"})
+
+                    # # Find the table within the div
+                    # tablex = div_h2h_team1.find("table", {"id": "btable"})
+
+                    # # Extract header and rows
+                    # header = [th.text.strip() for th in tablex.find_all("th")]
+
+                    # rows = [row.find_all('td') for row in tablex.find_all("tr")[1:]]
+                    # team_data = {'header': header, 'rows': [
+                    #     [col.text.strip() for col in row] for row in rows[1:]]}
+                    # # print(team_data)
+
+                    # # Perform calculations and store predictions
+
+                    # div_h2h_team2 = home_away_soup.find("div", {"id": "h2h-team2"})
+
+                    # # Find the table within the div
+                    # tabley = div_h2h_team2.find("table", {"id": "btable"})
+
+                    # # Extract header and rows
+                    # header = [th.text.strip() for th in tabley.find_all("th")]
+
+                    # rows = [row.find_all('td') for row in tabley.find_all("tr")[1:]]
+                    # team_data_away = {'header': header, 'rows': [
+                    #     [col.text.strip() for col in row] for row in rows[1:]]}
+                    # # print(team_data)
+
+                    # home_row = None
+                    # for row in team_data['rows']:
+                    #     if row[1] == first_item:
+                    #         home_row = row
+                    #         break
+
+                    # # Print the second row of text for 'Coventry City' if found
+                    # if home_row:
+                    #     homewin = home_row[3]
+                    #     homedraw = home_row[4]
+                    #     homeloss = home_row[5]
+
+                    #     print(homewin)
+                    #     print(homedraw)
+                    #     print(homeloss)
+
+                    # away_row = None
+                    # for row in team_data_away['rows']:
+                    #     if row[1] == second_item:
+                    #         away_row = row
+                    #         break
+
+                    # if away_row:
+                    #     awaywin = away_row[3]
+                    #     awaydraw = away_row[4]
+                    #     awayloss = away_row[5]
+                    #     # print(homeloss)
+                    #     print(awaywin)
+                    #     print(awaydraw)
+                    #     print(awayloss)
+
+                    # total_games = int(awaydraw)+int(awaywin)+int(awayloss) + \
+                    #     int(homewin)+int(homedraw)+int(homeloss)
+                    # home_win_prob = ("{: 0.2f}".format(
+                    #     ((int(homewin)+int(awayloss))*100)/int(total_games)))
+                    # draw_prob = ("{: 0.2f}".format(
+                    #     ((int(homedraw)+int(awaydraw))*100)/int(total_games)))
+                    # away_win_prob = ("{: 0.2f}".format(
+                    #     ((int(homeloss)+int(awaywin))*100)/int(total_games)))
+
+                    # probs = f'{home_win_prob} , {draw_prob} , {away_win_prob}'
+                    # print(probs)
                     home_index, away_index = teams.index(
                         first_item), teams.index(second_item)
                     row_list, row_list_away = league_data['rows'][home_index], league_data['rows'][away_index]
 
                     H1, H2 = float(
-                        row_list[6]) / float(
-                        row_list[2]), float(row_list_away[11]) / float(
-                        row_list[2])
-                    home_goal = float(H1) * float(H2) * float(
-                        row_list[2])
+                        row_list[6]) / home_avg, float(row_list_away[11]) / home_avg
+                    home_goal = float(H1) * float(H2) * home_avg
                     A1, A2 = float(
-                        row_list[7]) / float(row_list_away[2]), float(row_list_away[10]) / float(row_list_away[2])
-                    away_goal = float(A1) * float(A2) * \
-                        float(row_list_away[2])
-
+                        row_list[7]) / away_avg, float(row_list_away[10]) / away_avg
+                    away_goal = float(A1) * float(A2) * away_avg
                     threematch_goals_probability = "{:0.2f}".format(
                         (1 - poisson.cdf(k=3, mu=home_goal + away_goal)) * 100)
                     twomatch_goals_probability = "{:0.2f}".format(
@@ -376,6 +464,9 @@ def xpredict(request):
                     probable_scorelines = get_top_probable_scorelines(
                         home_goal, away_goal, n=3)
 
+                    # win_prob = win_probability(league, first_item, second_item)
+                    # print(win_prob.home_win_prob)
+
                     response_data = {
                         'home_team': first_item,
                         'home_goal': str(most_likely_outcome[0]),
@@ -387,6 +478,9 @@ def xpredict(request):
                         'match_result': result,
                         'match_result_prob': result_prob,
                         'top_scorelines': probable_scorelines,
+                        # 'home_win_prob': home_win_prob,
+                        # 'draw_prob': draw_prob,
+                        # 'away_win_prob': away_win_prob,
                     }
                     all_response_data.append(response_data)
 
@@ -613,3 +707,153 @@ def error_404_view(request, exception):
     # we add the path to the 404.html file
     # here. The name of our HTML file is 404.html
     return render(request, '404.html')
+
+
+def win_probability(league, first_item, second_item):
+    base_url = 'https://www.soccerstats.com/'
+
+    # league = 'england2'
+    home_away_url = f'{base_url}homeaway.asp?league={league}'
+    home_away_soup = fetch_data(home_away_url)
+    # if not home_away_soup:
+    #     continue
+
+    div_h2h_team1 = home_away_soup.find("div", {"id": "h2h-team1"})
+
+    # Find the table within the div
+    tablex = div_h2h_team1.find("table", {"id": "btable"})
+
+    # Extract header and rows
+    header = [th.text.strip() for th in tablex.find_all("th")]
+
+    rows = [row.find_all('td') for row in tablex.find_all("tr")[1:]]
+    team_data = {'header': header, 'rows': [
+        [col.text.strip() for col in row] for row in rows[1:]]}
+    # print(team_data)
+
+    # Perform calculations and store predictions
+
+    div_h2h_team2 = home_away_soup.find("div", {"id": "h2h-team2"})
+
+    # Find the table within the div
+    tabley = div_h2h_team2.find("table", {"id": "btable"})
+
+    # Extract header and rows
+    header = [th.text.strip() for th in tabley.find_all("th")]
+
+    rows = [row.find_all('td') for row in tabley.find_all("tr")[1:]]
+    team_data_away = {'header': header, 'rows': [
+        [col.text.strip() for col in row] for row in rows[1:]]}
+    # print(team_data)
+
+    home_row = None
+    for row in team_data['rows']:
+        if row[1] == first_item:
+            home_row = row
+            break
+
+    # Print the second row of text for 'Coventry City' if found
+    if home_row:
+        homewin = home_row[3]
+        homedraw = home_row[4]
+        homeloss = home_row[5]
+
+        print(homewin)
+        print(homedraw)
+        print(homeloss)
+
+    away_row = None
+    for row in team_data_away['rows']:
+        if row[1] == second_item:
+            away_row = row
+            break
+
+    if away_row:
+        awaywin = away_row[3]
+        awaydraw = away_row[4]
+        awayloss = away_row[5]
+        # print(homeloss)
+        print(awaywin)
+        print(awaydraw)
+        print(awayloss)
+
+    total_games = int(awaydraw)+int(awaywin)+int(awayloss) + \
+        int(homewin)+int(homedraw)+int(homeloss)
+    home_win_prob = ("{: 0.2f}".format(
+        ((int(homewin)+int(awayloss))*100)/int(total_games)))
+    draw_prob = ("{: 0.2f}".format(
+        ((int(homedraw)+int(awaydraw))*100)/int(total_games)))
+    away_win_prob = ("{: 0.2f}".format(
+        ((int(homeloss)+int(awaywin))*100)/int(total_games)))
+
+    probs = f'{home_win_prob} , {draw_prob} , {away_win_prob}'
+    print(probs)
+    return {
+        'home_win_prob': home_win_prob,
+        'draw_prob': draw_prob,
+        'away_win_prob': away_win_prob
+    }
+
+    #    home_away_url = f'{base_url}homeaway.asp?league={league}'
+    #     home_away_soup = fetch_data(home_away_url)
+    #     if not home_away_soup:
+    #         continue
+
+    #     div_h2h_team1 = home_away_soup.find("div", {"id": "h2h-team1"})
+
+    #     # Find the table within the div
+    #     tablex = div_h2h_team1.find("table", {"id": "btable"})
+
+    #     # Extract header and rows
+    #     header = [th.text.strip() for th in tablex.find_all("th")]
+
+    #     rows = [row.find_all('td') for row in tablex.find_all("tr")[1:]]
+    #     team_data_home = {'header': header, 'rows': [
+    #         [col.text.strip() for col in row] for row in rows[1:]]}
+
+    #     div_h2h_team2 = home_away_soup.find("div", {"id": "h2h-team2"})
+
+    #     # Find the table within the div
+    #     tabley = div_h2h_team1.find("table", {"id": "btable"})
+
+    #     # Extract header and rows
+    #     header = [th.text.strip() for th in tabley.find_all("th")]
+
+    #     rows = [row.find_all('td') for row in tabley.find_all("tr")[1:]]
+    #     team_data_away = {'header': header, 'rows': [
+    #         [col.text.strip() for col in row] for row in rows[1:]]}
+    #     # print(team_data)
+
+    #     first_item, second_item = cols[i], cols[i + 1]
+
+    #     home_row = None
+    #     for row in team_data_home['rows']:
+    #         if row[1] == first_item:
+    #             home_row = row
+    #             break
+
+    #     # Print the second row of text for 'Coventry City' if found
+    #     homewin = None
+    #     homedraw = None
+    #     homeloss = None
+    #     if home_row:
+    #         homewin = home_row[3]
+    #         homedraw = home_row[4]
+    #         homeloss = home_row[5]
+
+    #     away_row = None
+    #     for row in team_data_away['rows']:
+    #         if row[1] == second_item:
+    #             away_row = row
+    #             break
+
+    #     # Print the second row of text for 'Coventry City' if found
+    #     awaywin = None
+    #     awaydraw = None
+    #     awayloss = None
+    #     if away_row:
+    #         awaywin = away_row[3]
+    #         awaydraw = away_row[4]
+    #         awayloss = away_row[5]
+    #         # print(homeloss)
+    #         print(awaywin)
