@@ -462,7 +462,7 @@ def xpredict(request):
 
                     # Get top 3 probable scorelines
                     probable_scorelines = get_top_probable_scorelines(
-                        home_goal, away_goal, n=3)
+                        home_goal, away_goal, n=5)
 
                     # win_prob = win_probability(league, first_item, second_item)
                     # print(win_prob.home_win_prob)
